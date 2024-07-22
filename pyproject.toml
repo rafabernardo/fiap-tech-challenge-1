@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "fiap-tech-challenge-1"
+version = "0.1.0"
+description = ""
+authors = [
+  "Alceu Ramos Conceição Júnior <alceu.ramoos@gmail.com>",
+  "Rafaela Bernardo Rodrigues <rafabernardo.r@gmail.com>",
+]
+readme = "README.md"
+
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+wheel = "0.21.0"
+bson = "^0.5.10"
+dependency-injector = "^4.41.0"
+fastapi = "^0.111.1"
+fastapi_healthcheck = "^0.2.12"
+pydantic = "^2.8"
+uvicorn = "^0.30.3"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3"
+ruff = "^0.5.4"
+black = "24.4.2"
+isort = "5.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[virtualenvs]
+create = true
+in-project = true
+
+[tool.black]
+line-length = 79
+target-version = ['py38']
+
+[tool.isort]
+atomic = true
+profile = "black"
+line_length = 79
+skip_gitignore = true
+skip_glob = ["tests/data", "profiling"]
+known_first_party = ["black", "blib2to3", "blackd", "_black_version"]
