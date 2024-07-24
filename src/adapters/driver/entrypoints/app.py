@@ -1,8 +1,10 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi_healthcheck import HealthCheckFactory, healthCheckRoute
+
 # from src.adapters.driver.entrypoints.v1.register import register as register_router
-from src.adapters.driver.entrypoints.v1.v1 import router as v1_router
+from adapters.driver.entrypoints.v1.v1 import router as v1_router
+# from starlette.middleware.cors import CORSMiddleware
 
 # from src.adapters.entrypoints.v1.settings import router as settings_router
 # from src.configs.depency_injection import Container
@@ -11,7 +13,15 @@ from src.adapters.driver.entrypoints.v1.v1 import router as v1_router
 def create_app() -> FastAPI:
     # container = Container()
     fast_api = FastAPI()
+    # fast_api.add_middleware(
+    #     CORSMiddleware,
+    #     allow_origins=["*"],
+    #     allow_credentials=True,
+    #     allow_methods=["*"],
+    #     allow_headers=["*"],
+    # )
     # fast_api.container = container
+    fast_api.include_router(v1_router, prefix="/v1")
     return fast_api
 
 
