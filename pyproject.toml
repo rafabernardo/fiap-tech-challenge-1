@@ -21,6 +21,7 @@ dependency-injector = "^4.41.0"
 fastapi = "^0.111.1"
 fastapi_healthcheck = "^0.2.12"
 pydantic = "^2.8"
+pydantic-settings = "^2.3.4"
 uvicorn = "^0.30.3"
 
 [tool.poetry.group.dev.dependencies]
