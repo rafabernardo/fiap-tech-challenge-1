@@ -6,7 +6,7 @@ WORKDIR /fiap-tech-challenge-1
 RUN pip install poetry==1.8.3
 RUN poetry config virtualenvs.create false
 
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml poetry.lock README.md ./
 
 COPY src/ /fiap-tech-challenge-1/src/
 
