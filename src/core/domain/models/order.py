@@ -1,22 +1,40 @@
-from pydantic import BaseModel
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
-from core.domain.models import User
-from core.domain.models import Product
+from core.domain.models.product import Product
+from core.domain.models.user import User
+from pydantic import BaseModel
+
+
+class Status(Enum, str):
+    pending = "pending"
+    confirmed = "confirmed"
+    received = "received"
+    being_prepared = "being_prepared"
+    finished = "finished"
+    returned = "returned"
+    canceled = "canceled"
+
+
+class PaymentStatus(Enum, str):
+    paid = "paid"
+    pending = "pending"
+    canceled = "canceled"
+
 
 class OrderItem(BaseModel):
-    order_item_id: int
+    id: int
     product: Product
     quantity: int
     price: int
 
 
 class Order(BaseModel):
-    order_id: int
-    status: str
+    id: int
+    status: Status
     products: list[OrderItem]
     created_at: datetime
     updated_at: datetime
     owner: Optional[User] = None
-    payment_status: str
+    payment_status: PaymentStatus
