@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi_healthcheck import HealthCheckFactory, healthCheckRoute
 
-from src.adapters.driver.entrypoints.v1.v1 import router as v1_router
+from adapters.driver.entrypoints.v1 import get_v1_routers
 from src.config.settings import get_settings
 
 settings = get_settings()
@@ -14,6 +14,8 @@ def create_app() -> FastAPI:
     fast_api.add_api_route(
         "/health", endpoint=healthCheckRoute(factory=HealthCheckFactory())
     )
+    fast_api.include_router(get_v1_routers())
+
     return fast_api
 
 
@@ -24,7 +26,7 @@ def create_health_route():
 
 
 def create_routes():
-    app.include_router(v1_router, prefix="/v1")
+    app.include_router(get_v1_routers())
 
 
 def start():
