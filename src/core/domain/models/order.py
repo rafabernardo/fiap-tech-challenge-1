@@ -26,8 +26,8 @@ class PaymentStatus(Enum, str):
 class OrderItem(BaseModel):
     id: int
     product: Product
-    quantity: float
-    price: float
+    quantity: int
+    price: int
 
 
 class Order(BaseModel):

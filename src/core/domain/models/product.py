@@ -5,6 +5,6 @@ class Product(BaseModel):
     id: int
     name: str
     category: str
-    price: float
+    price: int
     description: str
     image: str
