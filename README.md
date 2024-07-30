@@ -38,3 +38,25 @@ Tech Challenge da primeira fase do curso Pós-Tech - Software Architecture | FIA
     | MONGO_PORT             | Porta de acesso ao MongoDB         |
     | MONGO_EXPRESS_USERNAME | Usuário de acesso ao Mongo Express |
     | MONGO_EXPRESS_USERNAME | Senha de acesso ao Mongo Express   |
+
+3.  Execução
+
+    Para executar o projeto, você pode utilizar o Makefile fornecido. Certifique-se de ter o Make instalado em seu sistema.
+
+    3.1. Build e execução do projeto
+
+    ```shell
+    $ make start-up
+    ```
+
+    Este comando irá compilar e executar o projeto.
+
+    3.2. Limpeza do projeto
+
+    ```shell
+    $ make clean-up
+    ```
+
+    Este comando irá limpar os arquivos gerados durante a compilação.
+
+    Certifique-se de ter as variáveis de ambiente definidas corretamente no arquivo `.env` antes de executar o projeto.

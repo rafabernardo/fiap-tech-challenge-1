@@ -3,18 +3,18 @@ include .env
 API_PORT ?= 8000
 
 build:
-	docker image build --build-arg API_PORT=${API_PORT} -t test .
+	docker-compose build
 
 run:
-	docker run --env-file .env --name test_run -p ${API_PORT}:${API_PORT} test
+	docker-compose up -d
 
 stop:
-	docker stop test_run
+	docker-compose down
 
 remove:
-	docker remove test_run
+	docker-compose rm -f
 
 clean-up: 
-	docker stop test_run && docker remove test_run
+	docker-compose down -v
 
 start-up: run
