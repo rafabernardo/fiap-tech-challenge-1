@@ -10,19 +10,17 @@ class UserMongoRepository(UserRepositoryInterface):
         self.database = get_mongo_database()
         self.collection = self.database["Users"]
 
-    @mongo_transactional
-    def _add(self, user: User, session: ClientSession = None) -> None:
-        self.collection.insert_one(user.model_dump(), session=session)
+    def _add(self, user: User) -> None:
+        self.collection.insert_one(user.model_dump())
 
-    @mongo_transactional
     def _get_by_id(self, id: int) -> User:
-        query = self.get_user_by_id_query()
+        query = self.get_user_by_id_query(id=id)
         users = self.collection.find(query)
         return list(users)
 
-    @mongo_transactional
-    def _list_users(self, session) -> list[User]:
+    def _list_users(self) -> list[User]:
         query = self.get_list_users_query()
+
         users = self.collection.find(query)
         return list(users)
 
