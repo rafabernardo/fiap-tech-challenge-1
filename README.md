@@ -30,11 +30,13 @@ Tech Challenge da primeira fase do curso Pós-Tech - Software Architecture | FIA
 
     Tech Challenge da primeira fase do curso Pós-Tech - Software Architecture | FIAP
 
-    | Variável               | Descrição                          |
-    | ---------------------- | ---------------------------------- |
-    | API_PORT               | Porta de acesso a API              |
-    | MONGO_USERNAME         | Usuário de acesso ao Mongodb       |
-    | MONGO_PASSWORD         | Senha de acesso ao Mongodb         |
-    | MONGO_PORT             | Porta de acesso ao MongoDB         |
-    | MONGO_EXPRESS_USERNAME | Usuário de acesso ao Mongo Express |
-    | MONGO_EXPRESS_USERNAME | Senha de acesso ao Mongo Express   |
+    | Variável               | Descrição                          | Exemplo       |
+    | ---------------------- | ---------------------------------- | ------------- |
+    | API_PORT               | Porta de acesso a API              | 8000          |
+    | MONGO_URL              | URL de acesso ao MongoDB           | localhost     |
+    | MONGO_PORT             | Porta de acesso ao MongoDB         | 27017         |
+    | MONGO_DATABASE         | Database utilizada no Mongodb      | database_test |
+    | MONGO_USERNAME         | Usuário de acesso ao Mongodb       | user          |
+    | MONGO_PASSWORD         | Senha de acesso ao Mongodb         | pass          |
+    | MONGO_EXPRESS_USERNAME | Usuário de acesso ao Mongo Express | user          |
+    | MONGO_EXPRESS_USERNAME | Senha de acesso ao Mongo Express   | pass          |
