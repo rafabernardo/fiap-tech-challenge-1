@@ -1,13 +1,12 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
-from core.domain.models.product import Product
+from pydantic import BaseModel, field_validator
+
 from core.domain.models.user import User
-from pydantic import BaseModel
 
 
-class Status(Enum, str):
+class Status(Enum):
     pending = "pending"
     confirmed = "confirmed"
     received = "received"
@@ -17,24 +16,39 @@ class Status(Enum, str):
     canceled = "canceled"
 
 
-class PaymentStatus(Enum, str):
+class PaymentStatus(Enum):
     paid = "paid"
     pending = "pending"
     canceled = "canceled"
 
 
 class OrderItem(BaseModel):
-    id: int
-    product: Product
+    product_id: str
     quantity: int
     price: int
 
 
 class Order(BaseModel):
-    id: int
-    status: Status
+    id: str | None = None
+    status: str  # Status
     products: list[OrderItem]
     created_at: datetime
     updated_at: datetime
-    owner: Optional[User] = None
-    payment_status: PaymentStatus
+    owner: User | None = None
+    payment_status: str  # PaymentStatus
+
+    @field_validator("status")
+    @classmethod
+    def validate_status(cls, v: str):
+        try:
+            return Status(v)
+        except ValueError:
+            raise ValueError(f"Invalid status value: {v}")
+
+    @field_validator("payment_status")
+    @classmethod
+    def validate_payment_status(cls, v: str):
+        try:
+            return PaymentStatus(v)
+        except ValueError:
+            raise ValueError(f"Invalid status value: {v}")
