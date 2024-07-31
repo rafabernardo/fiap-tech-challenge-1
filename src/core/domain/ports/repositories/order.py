@@ -4,26 +4,21 @@ from core.domain.models.order import Order, OrderItem
 
 
 class OrderRepositoryInterface(abc.ABC):
-    def __init__(self):
-        self.seen: set[Order] = set()
+    def __init__(self): ...
 
-    def add(self, order: Order) -> None:
-        self._add(order)
-        self.seen.add(order)
+    def add(self, order: Order) -> Order:
+        new_order = self._add(order)
+        return new_order
 
-    def get_by_id(self, id: int) -> Order:
+    def get_by_id(self, id: str) -> Order:
         order = self._get_by_id(id)
-        if order:
-            self.seen.add(order)
         return order
 
     def list_orders(self) -> list[Order]:
         orders = self._list_orders()
-        if orders:
-            self.seen.union(set(orders))
         return orders
 
-    def add_order_item(self, id, order_item: OrderItem) -> None:
+    def add_order_item(self, id: str, order_item: OrderItem) -> None:
         self._add_order_item(id, order_item)
         # self.seen.add(_add_order_item) # Add Order ??
 
@@ -38,7 +33,7 @@ class OrderRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _get_by_id(self, id: int) -> Order:
+    def _get_by_id(self, id: str) -> Order:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -46,7 +41,7 @@ class OrderRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _add_order_item(self, id, order_item: OrderItem) -> None:
+    def _add_order_item(self, id: str, order_item: OrderItem) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
