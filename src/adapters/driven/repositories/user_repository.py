@@ -1,6 +1,4 @@
-from pymongo.client_session import ClientSession
-
-from config.database import get_mongo_database, mongo_transactional
+from config.database import get_mongo_database
 from core.domain.models.user import User
 from core.domain.ports.repositories.user import UserRepositoryInterface
 
@@ -13,16 +11,19 @@ class UserMongoRepository(UserRepositoryInterface):
     def _add(self, user: User) -> None:
         self.collection.insert_one(user.model_dump())
 
-    def _get_by_id(self, id: int) -> User:
+    def _get_by_id(self, id: int) -> User | None:
         query = self.get_user_by_id_query(id=id)
-        users = self.collection.find(query)
-        return list(users)
+        user = self.collection.find_one(query)
+        if user:
+            return User(**user)
+        return None
 
-    def _list_users(self) -> list[User]:
+    def _list_users(self) -> list[User] | None:
         query = self.get_list_users_query()
-
         users = self.collection.find(query)
-        return list(users)
+        if users:
+            return [User(**user) for user in users]
+        return None
 
     @staticmethod
     def get_user_by_id_query(id: int) -> dict:
