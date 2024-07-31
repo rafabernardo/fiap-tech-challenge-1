@@ -13,7 +13,7 @@ class UserMongoRepository(UserRepositoryInterface):
 
     def _get_by_id(self, id: int) -> User | None:
         query = self.get_user_by_id_query(id=id)
-        user = self.collection.find(query)
+        user = self.collection.find_one(query)
         if user:
             return User(**user)
         return None
