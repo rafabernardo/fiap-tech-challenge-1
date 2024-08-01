@@ -32,8 +32,8 @@ class Order(BaseModel):
     id: str | None = None
     status: str  # Status
     products: list[OrderItem]
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
     owner: User | None = None
     payment_status: str  # PaymentStatus
 
@@ -41,7 +41,8 @@ class Order(BaseModel):
     @classmethod
     def validate_status(cls, v: str):
         try:
-            return Status(v)
+            Status(v)
+            return v
         except ValueError:
             raise ValueError(f"Invalid status value: {v}")
 
@@ -49,6 +50,7 @@ class Order(BaseModel):
     @classmethod
     def validate_payment_status(cls, v: str):
         try:
-            return PaymentStatus(v)
+            PaymentStatus(v)
+            return v
         except ValueError:
             raise ValueError(f"Invalid status value: {v}")
