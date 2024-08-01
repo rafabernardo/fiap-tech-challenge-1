@@ -18,6 +18,10 @@ class OrderRepositoryInterface(abc.ABC):
         orders = self._list_orders()
         return orders
 
+    def update_order(self, order: Order) -> Order:
+        updated_order = self._update_order(order)
+        return updated_order
+
     def add_order_item(self, id: str, order_item: OrderItem) -> None:
         self._add_order_item(id, order_item)
         # self.seen.add(_add_order_item) # Add Order ??
@@ -38,6 +42,10 @@ class OrderRepositoryInterface(abc.ABC):
 
     @abc.abstractmethod
     def _list_orders(self) -> list[Order]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _update_order(self, order: Order) -> Order:
         raise NotImplementedError
 
     @abc.abstractmethod
