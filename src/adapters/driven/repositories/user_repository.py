@@ -8,8 +8,11 @@ class UserMongoRepository(UserRepositoryInterface):
         self.database = get_mongo_database()
         self.collection = self.database["Users"]
 
-    def _add(self, user: User) -> None:
-        self.collection.insert_one(user.model_dump())
+    def _add(self, user: User) -> User:
+        user_id = self.collection.insert_one(user.model_dump()).inserted_id
+        user.id = str(user_id)
+
+        return user
 
     def _get_by_id(self, id: int) -> User | None:
         query = self.get_user_by_id_query(id=id)
@@ -24,6 +27,9 @@ class UserMongoRepository(UserRepositoryInterface):
         if users:
             return [User(**user) for user in users]
         return None
+
+    def _exists_by_cpf(self, cpf: str) -> bool:
+        return self.collection.count_documents({"cpf": cpf}) > 0
 
     @staticmethod
     def get_user_by_id_query(id: int) -> dict:
