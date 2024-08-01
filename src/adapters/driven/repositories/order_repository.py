@@ -22,7 +22,7 @@ class OrderMongoRepository(OrderRepositoryInterface):
         self.collection.insert_one(order_to_db)
 
         final_order = order_to_db
-        replace_id_key(final_order)
+        final_order = replace_id_key(final_order)
         return Order(**final_order)
 
     def _get_by_id(self, id: str) -> Order | None:
@@ -31,7 +31,7 @@ class OrderMongoRepository(OrderRepositoryInterface):
         if not order:
             return None
 
-        replace_id_key(order)
+        order = replace_id_key(order)
         return Order(**order)
 
     def _list_orders(self) -> list[Order] | None:
@@ -53,7 +53,7 @@ class OrderMongoRepository(OrderRepositoryInterface):
             return_document=ReturnDocument.AFTER,
         )
 
-        replace_id_key(updated_order)
+        updated_order = replace_id_key(updated_order)
         return Order(**updated_order)
 
     def _add_order_item(self, id, order_item: OrderItem) -> None:
