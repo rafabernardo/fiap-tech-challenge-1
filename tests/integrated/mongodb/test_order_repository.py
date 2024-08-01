@@ -6,18 +6,21 @@ from core.domain.models.order import Order
 if __name__ == "__main__":
 
     order_repository = OrderMongoRepository()
+    orders = order_repository.list_orders()
     now = datetime.now()
     result = order_repository.add(
         Order(
-            # id="PRA QUEBRAR",
+            id="PRA QUEBRAR",
             status="pending",
             products=[],
-            created_at=now,
-            updated_at=now,
+            # created_at=now,
+            # updated_at=now,
             # owner= None,
             payment_status="pending",
         )
     )
+    result.status = "confirmed"
+    order_repository.update_order(result)
     print(result)
     orders = order_repository.list_orders()
     print(orders)
