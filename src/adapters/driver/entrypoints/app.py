@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi_healthcheck import HealthCheckFactory, healthCheckRoute
 
 from adapters.driver.entrypoints.v1 import get_v1_routers
-from src.config.settings import get_settings
+from config.settings import get_settings
 
 settings = get_settings()
 print(settings.API_PORT)
@@ -22,7 +22,9 @@ def create_app() -> FastAPI:
 def create_health_route():
     # Add Health Checks
     health_checks = HealthCheckFactory()
-    app.add_api_route("/health", endpoint=healthCheckRoute(factory=health_checks))
+    app.add_api_route(
+        "/health", endpoint=healthCheckRoute(factory=health_checks)
+    )
 
 
 def create_routes():
@@ -32,7 +34,7 @@ def create_routes():
 def start():
     create_health_route()
     create_routes()
-    uvicorn.run(app, host="0.0.0.0", port=settings.API_PORT)
+    uvicorn.run(app, port=int(settings.API_PORT))
 
 
 app = create_app()

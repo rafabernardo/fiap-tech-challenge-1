@@ -4,8 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    API_PORT: str
-
+    API_PORT: int
     MONGO_URL: str
     MONGO_PORT: int
     MONGO_USERNAME: str
