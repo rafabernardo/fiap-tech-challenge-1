@@ -34,7 +34,7 @@ def create_routes():
 def start():
     create_health_route()
     create_routes()
-    uvicorn.run(app, port=int(settings.API_PORT))
+    uvicorn.run(app, host="0.0.0.0", port=settings.API_PORT)
 
 
 app = create_app()
