@@ -16,7 +16,6 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
 wheel = "0.21.0"
-bson = "^0.5.10"
 dependency-injector = "^4.41.0"
 fastapi = "^0.111.1"
 fastapi_healthcheck = "^0.2.12"
