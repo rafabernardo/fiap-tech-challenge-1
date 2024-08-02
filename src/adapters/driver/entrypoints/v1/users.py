@@ -1,8 +1,11 @@
 from fastapi import APIRouter, HTTPException, Response, status
 
 from adapters.driven.repositories.user_repository import UserMongoRepository
-from adapters.driver.entrypoints.v1.model.user import CreateUserV1Request
-from core.application.exceptions.user_exceptions import UserAlreadyExistsError
+from adapters.driver.entrypoints.v1.models.user import RegisterUserV1Request
+from core.application.exceptions.user_exceptions import (
+    UserAlreadyExistsError,
+    UserInvalidFormatDataError,
+)
 from core.application.services.user_service import UserService
 from core.domain.models.user import User
 
@@ -29,18 +32,21 @@ async def get_user_by_cpf(cpf: str):
 
 @router.post("/register")
 async def register(
-    create_user_request: CreateUserV1Request,
+    create_user_request: RegisterUserV1Request,
     response: Response,
 ):
     user_repository = UserMongoRepository()
     service = UserService(user_repository)
     user = User(**create_user_request.model_dump())
     try:
-        created_user = service.create_user(user)
-        print(f"Created User: {created_user}")
+        created_user = service.register_user(user)
     except UserAlreadyExistsError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=e.message
+        )
+    except UserInvalidFormatDataError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=e.message
         )
     except Exception as e:
         raise HTTPException(
@@ -52,7 +58,7 @@ async def register(
         HEADER_CONTENT_TYPE_APPLICATION_JSON
     )
 
-    return user
+    return created_user
 
 
 @router.delete("/delete/{id}")
