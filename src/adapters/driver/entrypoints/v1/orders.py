@@ -3,7 +3,7 @@ from adapters.driver.entrypoints.v1.models.order import (
     RegisterOrderV1Request,
     RegisterOrderV1Response,
 )
-from core.application.services.register_order import OrderService
+from core.application.services.order_service import OrderService
 from core.domain.models.order import Order
 from fastapi import APIRouter, HTTPException, Response, status
 
