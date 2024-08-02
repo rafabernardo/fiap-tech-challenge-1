@@ -1,3 +1,7 @@
+from adapters.driven.repositories.utils import (
+    prepare_document_to_db,
+    replace_id_key,
+)
 from config.database import get_mongo_database
 from core.domain.models.user import User
 from core.domain.ports.repositories.user import UserRepositoryInterface
@@ -9,10 +13,12 @@ class UserMongoRepository(UserRepositoryInterface):
         self.collection = self.database["Users"]
 
     def _add(self, user: User) -> User:
-        user_id = self.collection.insert_one(user.model_dump()).inserted_id
-        user.id = str(user_id)
+        user_data = user.model_dump()
+        user_to_db = prepare_document_to_db(user_data)
+        self.collection.insert_one(user_to_db)
+        final_user = replace_id_key(user_to_db)
 
-        return user
+        return User(**final_user)
 
     def _get_by_id(self, id: int) -> User | None:
         query = self.get_user_by_id_query(id=id)
