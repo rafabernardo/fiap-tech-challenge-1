@@ -16,8 +16,7 @@ class UserRepositoryInterface(abc.ABC):
         return user
 
     def exists_by_cpf(self, cpf: str) -> bool:
-        user = self._exists_by_cpf(cpf)
-        return user
+        return self._exists_by_cpf(cpf)
 
     def list_users(self) -> list[User]:
         users = self._list_users()
@@ -32,7 +31,7 @@ class UserRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _exists_by_cpf(self, cpf: str) -> User:
+    def _exists_by_cpf(self, cpf: str) -> bool:
         raise NotImplementedError
 
     @abc.abstractmethod
