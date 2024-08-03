@@ -40,7 +40,7 @@ async def register(
         created_order = service.register_order(order)
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error"
         )
 
     response.status_code = status.HTTP_201_CREATED
