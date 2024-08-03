@@ -39,7 +39,7 @@ async def list_users(
     return users
 
 
-@router.get("/{id}")
+@router.get("/{id}", response_model=RegisterUserV1Response)
 async def get_user_by_id(
     id: str,
     response: Response,
