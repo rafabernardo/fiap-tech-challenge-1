@@ -23,7 +23,7 @@ class UserMongoRepository(UserRepositoryInterface):
         return User(**final_user)
 
     def _get_by_id(self, id: str) -> User | None:
-        query = self.get_user_by_id_query(id=ObjectId(id))
+        query = self.get_user_by_id_query(id=id)
         user = self.collection.find_one(query)
         if user:
             final_user = replace_id_key(user)
@@ -43,7 +43,7 @@ class UserMongoRepository(UserRepositoryInterface):
 
     @staticmethod
     def get_user_by_id_query(id: str) -> dict:
-        query = {"_id": id}
+        query = {"_id": ObjectId(id)}
         return query
 
     @staticmethod
