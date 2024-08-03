@@ -13,3 +13,15 @@ class OrderService:
         order.order_number = order_number_service.get_next_order_number()
         new_order = self.repository.add(order)
         return new_order
+
+    def list_orders(
+        self, filter: dict, page: int, page_size: int
+    ) -> list[Order]:
+        paginated_orders = self.repository.list_orders(
+            filter=filter, page=page, page_size=page_size
+        )
+        return paginated_orders
+
+    def count_orders(self, filter: dict) -> int:
+        total_orders = self.repository.count_orders(filter=filter)
+        return total_orders
