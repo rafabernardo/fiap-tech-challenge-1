@@ -18,6 +18,7 @@ class RegisterOrderV1Response(BaseModel):
     id: str | None = None
     owner_id: str | None = None
 
+    order_number: int | None = None
     status: str
     products: list[OrderItem]
     payment_status: str
