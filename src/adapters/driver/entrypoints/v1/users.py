@@ -18,7 +18,7 @@ HEADER_CONTENT_TYPE_APPLICATION_JSON = "application/json"
 router = APIRouter(prefix="/users")
 
 
-@router.get("")
+@router.get("", response_model=list[RegisterUserV1Response])
 async def list_users(
     response: Response,
 ):
