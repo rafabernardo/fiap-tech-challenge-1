@@ -24,4 +24,12 @@ class UserService:
                 raise UserAlreadyExistsError(
                     "A user with this CPF already exists"
                 )
+
         return self.repository.add(user)
+
+    def get_user_by_cpf(self, cpf: str) -> User:
+        valid_cpf = validate_cpf(cpf)
+        if not valid_cpf:
+            raise UserInvalidFormatDataError("Invalid CPF format")
+
+        return self.repository.get_by_cpf(cpf)

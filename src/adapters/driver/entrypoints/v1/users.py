@@ -67,9 +67,36 @@ async def get_user_by_id(
     return user
 
 
-@router.get("/cpf/{cpf}")
-async def get_user_by_cpf(cpf: str):
-    return {"msg": cpf}
+@router.get("/cpf/{cpf}", response_model=RegisterUserV1Response)
+async def get_user_by_cpf(
+    cpf: str,
+    response: Response,
+):
+    user_repository = UserMongoRepository()
+    try:
+        user = user_repository.get_by_cpf(cpf)
+
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found",
+            )
+    except UserInvalidFormatDataError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=e.message
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str("Internal server error"),
+        )
+
+    response.status_code = status.HTTP_200_OK
+    response.headers[HEADER_CONTENT_TYPE] = (
+        HEADER_CONTENT_TYPE_APPLICATION_JSON
+    )
+
+    return user
 
 
 @router.post("/register", response_model=RegisterUserV1Response)

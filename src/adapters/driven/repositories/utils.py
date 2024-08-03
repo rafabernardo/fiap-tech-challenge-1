@@ -18,3 +18,7 @@ def prepare_document_to_db(document: dict):
     if data.get("created_at") is None:
         data["created_at"] = now
     return data
+
+
+def clean_cpf_to_db(cpf: str) -> str:
+    return cpf.replace(".", "").replace("-", "")
