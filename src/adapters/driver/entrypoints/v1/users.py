@@ -37,8 +37,31 @@ async def list_users(
 
 
 @router.get("/{id}")
-async def get_user_by_id(id: int):
-    return {"msg": id}
+async def get_user_by_id(
+    id: str,
+    response: Response,
+):
+    user_repository = UserMongoRepository()
+    try:
+        user = user_repository.get_by_id(id)
+
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found",
+            )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str("Internal server error"),
+        )
+
+    response.status_code = status.HTTP_200_OK
+    response.headers[HEADER_CONTENT_TYPE] = (
+        HEADER_CONTENT_TYPE_APPLICATION_JSON
+    )
+
+    return user
 
 
 @router.get("/cpf/{cpf}")
