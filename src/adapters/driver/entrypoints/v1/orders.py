@@ -1,3 +1,5 @@
+from fastapi import APIRouter, HTTPException, Response, status
+
 from adapters.driven.repositories.order_repository import OrderMongoRepository
 from adapters.driver.entrypoints.v1.models.order import (
     RegisterOrderV1Request,
@@ -5,7 +7,6 @@ from adapters.driver.entrypoints.v1.models.order import (
 )
 from core.application.services.order_service import OrderService
 from core.domain.models.order import Order
-from fastapi import APIRouter, HTTPException, Response, status
 
 HEADER_CONTENT_TYPE = "content-type"
 HEADER_CONTENT_TYPE_APPLICATION_JSON = "application/json"
@@ -43,7 +44,9 @@ async def register(
         )
 
     response.status_code = status.HTTP_201_CREATED
-    response.headers[HEADER_CONTENT_TYPE] = HEADER_CONTENT_TYPE_APPLICATION_JSON
+    response.headers[HEADER_CONTENT_TYPE] = (
+        HEADER_CONTENT_TYPE_APPLICATION_JSON
+    )
 
     return created_order
 
