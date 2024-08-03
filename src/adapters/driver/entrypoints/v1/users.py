@@ -1,7 +1,10 @@
 from fastapi import APIRouter, HTTPException, Response, status
 
 from adapters.driven.repositories.user_repository import UserMongoRepository
-from adapters.driver.entrypoints.v1.models.user import RegisterUserV1Request
+from adapters.driver.entrypoints.v1.models.user import (
+    RegisterUserV1Request,
+    RegisterUserV1Response,
+)
 from core.application.exceptions.user_exceptions import (
     UserAlreadyExistsError,
     UserInvalidFormatDataError,
@@ -30,7 +33,7 @@ async def get_user_by_cpf(cpf: str):
     return {"msg": cpf}
 
 
-@router.post("/register")
+@router.post("/register", response_model=RegisterUserV1Response)
 async def register(
     create_user_request: RegisterUserV1Request,
     response: Response,

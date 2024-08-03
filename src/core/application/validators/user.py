@@ -1,7 +1,7 @@
 import re
 
 
-def validate_cpf(cpf):
+def validate_cpf(cpf: str | None) -> bool:
     if cpf is None:
         return False
 
@@ -10,22 +10,17 @@ def validate_cpf(cpf):
     if len(cpf) != 11:
         return False
 
-    if cpf == cpf[0] * 11:
-        return False
-
     sum = 0
     for i in range(9):
         sum += int(cpf[i]) * (10 - i)
     digit_1 = (sum * 10) % 11
-    if digit_1 == 10:
-        digit_1 = 0
+    digit_1 %= 10
 
     sum = 0
     for i in range(10):
         sum += int(cpf[i]) * (11 - i)
     digit_2 = (sum * 10) % 11
-    if digit_2 == 10:
-        digit_2 = 0
+    digit_2 %= 10
 
     if int(cpf[9]) != digit_1 or int(cpf[10]) != digit_2:
         return False
@@ -33,7 +28,7 @@ def validate_cpf(cpf):
     return True
 
 
-def validate_email(email):
+def validate_email(email: str | None) -> bool:
     if email is None:
         return False
 
