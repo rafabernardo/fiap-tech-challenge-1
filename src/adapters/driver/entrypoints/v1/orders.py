@@ -3,13 +3,20 @@ from fastapi import APIRouter, HTTPException, Query, Response, status
 from adapters.driven.repositories.order_repository import OrderMongoRepository
 from adapters.driven.repositories.utils import get_pagination_info
 from adapters.driver.entrypoints.v1.exceptions.commons import (
-    NoDocumentsFoundException,
+    InternalServerErrorHTTPException,
+    NoDocumentsFoundHTTPException,
+)
+from adapters.driver.entrypoints.v1.models.commons import (
+    DeleteDocumentV1Response,
 )
 from adapters.driver.entrypoints.v1.models.order import (
     ListOrderV1Response,
     OrderV1Response,
     RegisterOrderV1Request,
     RegisterOrderV1Response,
+)
+from core.application.exceptions.commons_exceptions import (
+    NoDocumentsFoundException,
 )
 from core.application.services.order_service import OrderService
 from core.domain.models.order import Order
@@ -60,7 +67,7 @@ async def get_user_by_id(id: str, response: Response) -> OrderV1Response:
     order = order_service.get_order_by_id(id)
 
     if order is None:
-        raise NoDocumentsFoundException()
+        raise NoDocumentsFoundHTTPException()
 
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
@@ -69,7 +76,7 @@ async def get_user_by_id(id: str, response: Response) -> OrderV1Response:
     return order
 
 
-@router.post("/register", response_model=RegisterOrderV1Response)
+@router.post("", response_model=RegisterOrderV1Response)
 async def register(
     create_order_request: RegisterOrderV1Request,
     response: Response,
@@ -83,11 +90,8 @@ async def register(
     )
     try:
         created_order = service.register_order(order)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error",
-        )
+    except Exception:
+        raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_201_CREATED
     response.headers[HEADER_CONTENT_TYPE] = (
@@ -97,9 +101,26 @@ async def register(
     return created_order
 
 
-@router.delete("/delete/{id}")
-async def delete(id: str):
-    return {"msg": id}
+@router.delete("/{id}", response_model=DeleteDocumentV1Response)
+async def delete(id: str, response: Response) -> DeleteDocumentV1Response:
+    repository = OrderMongoRepository()
+    service = OrderService(repository)
+
+    try:
+        was_order_deleted = service.delete_order(id)
+    except NoDocumentsFoundException as exc:
+        raise NoDocumentsFoundHTTPException(detail=exc.message)
+    except Exception as exc:
+        raise InternalServerErrorHTTPException()
+
+    if not was_order_deleted:
+        raise InternalServerErrorHTTPException()
+
+    response.status_code = status.HTTP_204_NO_CONTENT
+    response.headers[HEADER_CONTENT_TYPE] = (
+        HEADER_CONTENT_TYPE_APPLICATION_JSON
+    )
+    return DeleteDocumentV1Response(deleted_document=id)
 
 
 @router.patch("/{id}")

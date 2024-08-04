@@ -26,6 +26,10 @@ class OrderRepositoryInterface(abc.ABC):
         total_orders = self._count_orders(filter=filter)
         return total_orders
 
+    def delete_order(self, id: str) -> bool:
+        was_order_deleted = self._delete_order(id=id)
+        return was_order_deleted
+
     def update_order(self, order: Order) -> Order:
         updated_order = self._update_order(order)
         return updated_order
@@ -56,6 +60,10 @@ class OrderRepositoryInterface(abc.ABC):
 
     @abc.abstractmethod
     def _count_orders(self, filter: dict) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _delete_order(self, id: str) -> bool:
         raise NotImplementedError
 
     @abc.abstractmethod

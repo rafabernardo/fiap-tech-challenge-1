@@ -67,6 +67,12 @@ class OrderMongoRepository(OrderRepositoryInterface):
     def _count_orders(self, filter: dict) -> int:
         return self.collection.count_documents(filter)
 
+    def _delete_order(self, id: str) -> bool:
+        query = self.get_order_by_id_query(id=id)
+        result = self.collection.delete_one(query)
+        was_order_deleted = result.deleted_count > 0
+        return was_order_deleted
+
     def _add_order_item(self, id, order_item: OrderItem) -> None:
         raise NotImplementedError
 

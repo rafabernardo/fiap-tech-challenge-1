@@ -1,3 +1,6 @@
+from core.application.exceptions.commons_exceptions import (
+    NoDocumentsFoundException,
+)
 from core.application.services.order_number_service import OrderNumberService
 from core.domain.models.order import Order
 from core.domain.ports.repositories.order import OrderRepositoryInterface
@@ -29,3 +32,10 @@ class OrderService:
     def count_orders(self, filter: dict) -> int:
         total_orders = self.repository.count_orders(filter=filter)
         return total_orders
+
+    def delete_order(self, id: str) -> bool:
+        order = self.get_order_by_id(id)
+        if order is None:
+            raise NoDocumentsFoundException()
+        was_order_deleted = self.repository.delete_order(id=id)
+        return was_order_deleted
