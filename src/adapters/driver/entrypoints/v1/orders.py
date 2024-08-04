@@ -73,7 +73,7 @@ async def get_user_by_id(id: str, response: Response) -> OrderV1Response:
     return order
 
 
-@router.post("/register", response_model=RegisterOrderV1Response)
+@router.post("", response_model=RegisterOrderV1Response)
 async def register(
     create_order_request: RegisterOrderV1Request,
     response: Response,
@@ -98,7 +98,7 @@ async def register(
     return created_order
 
 
-@router.delete("/delete/{id}", response_model=DeleteDocumentV1Response)
+@router.delete("/{id}", response_model=DeleteDocumentV1Response)
 async def delete(id: str, response: Response) -> DeleteDocumentV1Response:
     repository = OrderMongoRepository()
     service = OrderService(repository)
