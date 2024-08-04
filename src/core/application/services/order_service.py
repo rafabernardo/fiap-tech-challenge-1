@@ -29,3 +29,7 @@ class OrderService:
     def count_orders(self, filter: dict) -> int:
         total_orders = self.repository.count_orders(filter=filter)
         return total_orders
+
+    def delete_order(self, id: str) -> bool:
+        was_order_deleted = self.repository.delete_order(id=id)
+        return was_order_deleted
