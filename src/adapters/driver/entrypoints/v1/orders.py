@@ -19,6 +19,7 @@ router = APIRouter(prefix="/order")
 
 @router.get("", response_model=ListOrderV1Response)
 async def list_users(
+    response: Response,
     page: int = Query(default=1, gt=0),
     page_size: int = Query(default=10, gt=0, le=100),
 ) -> ListOrderV1Response:
@@ -29,6 +30,12 @@ async def list_users(
         filter={}, page=page, page_size=page_size
     )
     total_orders = order_service.count_orders(filter={})
+    if total_orders == 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Order not found. id={id}",
+        )
+
     pagination_info = get_pagination_info(
         total_results=total_orders, page=page, page_size=page_size
     )
@@ -36,6 +43,11 @@ async def list_users(
 
     paginated_orders = ListOrderV1Response(
         **pagination_info.model_dump(), results=listed_orders
+    )
+
+    response.status_code = status.HTTP_200_OK
+    response.headers[HEADER_CONTENT_TYPE] = (
+        HEADER_CONTENT_TYPE_APPLICATION_JSON
     )
     return paginated_orders
 
