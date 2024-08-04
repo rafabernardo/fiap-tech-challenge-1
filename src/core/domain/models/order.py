@@ -34,6 +34,7 @@ class Order(BaseModel):
     products: list[OrderItem]
     created_at: datetime | None = None
     updated_at: datetime | None = None
+    order_number: int | None = None
     owner: User | None = None
     payment_status: str  # PaymentStatus
 
