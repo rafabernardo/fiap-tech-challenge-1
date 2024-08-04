@@ -1,3 +1,5 @@
+from bson import ObjectId
+
 from adapters.driven.repositories.utils import (
     prepare_document_to_db,
     replace_id_key,
@@ -20,11 +22,12 @@ class UserMongoRepository(UserRepositoryInterface):
 
         return User(**final_user)
 
-    def _get_by_id(self, id: int) -> User | None:
+    def _get_by_id(self, id: str) -> User | None:
         query = self.get_user_by_id_query(id=id)
         user = self.collection.find_one(query)
         if user:
-            return User(**user)
+            final_user = replace_id_key(user)
+            return User(**final_user)
         return None
 
     def _list_users(self) -> list[User] | None:
@@ -39,8 +42,8 @@ class UserMongoRepository(UserRepositoryInterface):
         return self.collection.count_documents({"cpf": cpf}) > 0
 
     @staticmethod
-    def get_user_by_id_query(id: int) -> dict:
-        query = {"id": id}
+    def get_user_by_id_query(id: str) -> dict:
+        query = {"_id": ObjectId(id)}
         return query
 
     @staticmethod
