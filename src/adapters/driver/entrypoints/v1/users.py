@@ -1,14 +1,21 @@
 from fastapi import APIRouter, HTTPException, Response, status
 
 from adapters.driven.repositories.user_repository import UserMongoRepository
+from adapters.driver.entrypoints.v1.exceptions.commons import (
+    InternalServerErrorHTTPException,
+    NoDocumentsFoundHTTPException,
+    UnprocessableEntityErrorHTTPException,
+)
 from adapters.driver.entrypoints.v1.models.user import (
     RegisterUserV1Request,
     UserV1Response,
 )
+from core.application.exceptions.commons_exceptions import (
+    NoDocumentsFoundException,
+)
 from core.application.exceptions.user_exceptions import (
     UserAlreadyExistsError,
     UserInvalidFormatDataError,
-    UserNotFoundError,
 )
 from core.application.services.user_service import UserService
 from core.domain.models.user import User
@@ -26,11 +33,8 @@ async def list_users(
     user_repository = UserMongoRepository()
     try:
         users = user_repository.list_users()
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str("Internal server error"),
-        )
+    except Exception:
+        raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
@@ -50,15 +54,9 @@ async def get_user_by_id(
         user = user_repository.get_by_id(id)
 
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found",
-            )
+            raise NoDocumentsFoundHTTPException()
     except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str("Internal server error"),
-        )
+        raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
@@ -78,19 +76,14 @@ async def get_user_by_cpf(
         user = user_repository.get_by_cpf(cpf)
 
         if user is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found",
-            )
-    except UserInvalidFormatDataError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=e.message
+            raise NoDocumentsFoundHTTPException()
+    except UserInvalidFormatDataError:
+        raise UnprocessableEntityErrorHTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Invalid CPF",
         )
     except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str("Internal server error"),
-        )
+        raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
@@ -118,11 +111,8 @@ async def register(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=e.message
         )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str("Internal server error"),
-        )
+    except Exception:
+        raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_201_CREATED
     response.headers[HEADER_CONTENT_TYPE] = (
@@ -147,16 +137,10 @@ async def delete(
             response.status_code = status.HTTP_204_NO_CONTENT
             return
 
-    except UserNotFoundError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str("Internal server error"),
-        )
+    except NoDocumentsFoundException:
+        raise NoDocumentsFoundHTTPException()
+    except Exception:
+        raise InternalServerErrorHTTPException()
 
 
 @router.patch("/{id}")
