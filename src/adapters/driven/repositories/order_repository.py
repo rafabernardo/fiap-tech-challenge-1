@@ -56,6 +56,17 @@ class OrderMongoRepository(OrderRepositoryInterface):
         updated_order = replace_id_key(updated_order)
         return Order(**updated_order)
 
+    def _list_orders(
+        self, filter: dict, page: int, page_size: int
+    ) -> list[Order]:
+        skip = (page - 1) * page_size
+        orders = list(self.collection.find(filter).skip(skip).limit(page_size))
+
+        return [Order(**replace_id_key(order)) for order in orders]
+
+    def _count_orders(self, filter: dict) -> int:
+        return self.collection.count_documents(filter)
+
     def _add_order_item(self, id, order_item: OrderItem) -> None:
         raise NotImplementedError
 

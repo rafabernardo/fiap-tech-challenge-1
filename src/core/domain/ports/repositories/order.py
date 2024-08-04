@@ -14,9 +14,17 @@ class OrderRepositoryInterface(abc.ABC):
         order = self._get_by_id(id)
         return order
 
-    def list_orders(self) -> list[Order]:
-        orders = self._list_orders()
+    def list_orders(
+        self, filter: dict, page: int, page_size: int
+    ) -> list[Order]:
+        orders = self._list_orders(
+            filter=filter, page=page, page_size=page_size
+        )
         return orders
+
+    def count_orders(self, filter: dict) -> int:
+        total_orders = self._count_orders(filter=filter)
+        return total_orders
 
     def update_order(self, order: Order) -> Order:
         updated_order = self._update_order(order)
@@ -41,7 +49,13 @@ class OrderRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _list_orders(self) -> list[Order]:
+    def _list_orders(
+        self, filter: dict, page: int, page_size: int
+    ) -> list[Order]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _count_orders(self, filter: dict) -> int:
         raise NotImplementedError
 
     @abc.abstractmethod
