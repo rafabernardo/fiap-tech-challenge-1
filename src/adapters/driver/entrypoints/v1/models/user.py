@@ -9,7 +9,7 @@ class RegisterUserV1Request(BaseModel):
     cpf: str | None = None
 
 
-class RegisterUserV1Response(BaseModel):
+class UserV1Response(BaseModel):
     id: str
     name: str
     email: str
