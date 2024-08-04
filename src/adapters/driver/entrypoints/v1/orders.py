@@ -40,9 +40,21 @@ async def list_users(
     return paginated_orders
 
 
-@router.get("/{id}")
-async def get_user_by_id(id: str):
-    return {"msg": id}
+@router.get("/{id}", response_model=OrderV1Response)
+async def get_user_by_id(id: str, response: Response) -> OrderV1Response:
+    order_repository = OrderMongoRepository()
+    order_service = OrderService(repository=order_repository)
+    order = order_service.get_order_by_id(id)
+    if order is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Order not found. id={id}",
+        )
+    response.status_code = status.HTTP_200_OK
+    response.headers[HEADER_CONTENT_TYPE] = (
+        HEADER_CONTENT_TYPE_APPLICATION_JSON
+    )
+    return order
 
 
 @router.post("/register", response_model=RegisterOrderV1Response)
@@ -61,7 +73,8 @@ async def register(
         created_order = service.register_order(order)
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
         )
 
     response.status_code = status.HTTP_201_CREATED
