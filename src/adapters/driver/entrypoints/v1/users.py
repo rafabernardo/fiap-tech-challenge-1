@@ -8,6 +8,7 @@ from adapters.driver.entrypoints.v1.models.user import (
 from core.application.exceptions.user_exceptions import (
     UserAlreadyExistsError,
     UserInvalidFormatDataError,
+    UserNotFoundError,
 )
 from core.application.services.user_service import UserService
 from core.domain.models.user import User
@@ -132,8 +133,30 @@ async def register(
 
 
 @router.delete("/delete/{id}")
-async def delete(id: int):
-    return {"msg": id}
+async def delete(
+    id: str,
+    response: Response,
+):
+    user_repository = UserMongoRepository()
+    service = UserService(user_repository)
+
+    try:
+        was_user_deleted = service.delete_user(id)
+
+        if was_user_deleted:
+            response.status_code = status.HTTP_204_NO_CONTENT
+            return
+
+    except UserNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str("Internal server error"),
+        )
 
 
 @router.patch("/{id}")

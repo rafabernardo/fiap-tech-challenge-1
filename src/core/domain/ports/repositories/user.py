@@ -18,6 +18,9 @@ class UserRepositoryInterface(abc.ABC):
     def exists_by_cpf(self, cpf: str) -> bool:
         return self._exists_by_cpf(cpf)
 
+    def exists_by_id(self, id: str) -> bool:
+        return self._exists_by_id(id)
+
     def list_users(self) -> list[User]:
         users = self._list_users()
         return users
@@ -25,6 +28,9 @@ class UserRepositoryInterface(abc.ABC):
     def get_by_cpf(self, cpf: str) -> User:
         user = self._get_by_cpf(cpf)
         return user
+
+    def delete_order(self, id: str) -> bool:
+        return self._delete_user(id)
 
     @abc.abstractmethod
     def _add(self, user: User) -> User:
@@ -39,9 +45,17 @@ class UserRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def _exists_by_id(self, id: str) -> bool:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def _list_users(self) -> list[User]:
         raise NotImplementedError
 
     @abc.abstractmethod
     def _get_by_cpf(self, cpf: str) -> User:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _delete_user(self, id: str) -> bool:
         raise NotImplementedError
