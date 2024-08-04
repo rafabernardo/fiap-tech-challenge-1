@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Response, status
 from adapters.driven.repositories.user_repository import UserMongoRepository
 from adapters.driver.entrypoints.v1.models.user import (
     RegisterUserV1Request,
-    RegisterUserV1Response,
+    UserV1Response,
 )
 from core.application.exceptions.user_exceptions import (
     UserAlreadyExistsError,
@@ -18,7 +18,7 @@ HEADER_CONTENT_TYPE_APPLICATION_JSON = "application/json"
 router = APIRouter(prefix="/users")
 
 
-@router.get("", response_model=list[RegisterUserV1Response])
+@router.get("", response_model=list[UserV1Response])
 async def list_users(
     response: Response,
 ):
@@ -39,7 +39,7 @@ async def list_users(
     return users
 
 
-@router.get("/{id}", response_model=RegisterUserV1Response)
+@router.get("/{id}", response_model=UserV1Response)
 async def get_user_by_id(
     id: str,
     response: Response,
@@ -67,7 +67,7 @@ async def get_user_by_id(
     return user
 
 
-@router.get("/cpf/{cpf}", response_model=RegisterUserV1Response)
+@router.get("/cpf/{cpf}", response_model=UserV1Response)
 async def get_user_by_cpf(
     cpf: str,
     response: Response,
@@ -99,7 +99,7 @@ async def get_user_by_cpf(
     return user
 
 
-@router.post("/register", response_model=RegisterUserV1Response)
+@router.post("/register", response_model=UserV1Response)
 async def register(
     create_user_request: RegisterUserV1Request,
     response: Response,
