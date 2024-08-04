@@ -31,7 +31,8 @@ class UserMongoRepository(UserRepositoryInterface):
         query = self.get_list_users_query()
         users = self.collection.find(query)
         if users:
-            return [User(**user) for user in users]
+            return [User(**replace_id_key(user)) for user in users]
+
         return None
 
     def _exists_by_cpf(self, cpf: str) -> bool:

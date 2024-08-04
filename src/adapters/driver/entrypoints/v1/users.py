@@ -18,9 +18,25 @@ HEADER_CONTENT_TYPE_APPLICATION_JSON = "application/json"
 router = APIRouter(prefix="/users")
 
 
-@router.get("")
-async def list_users():
-    return {"msg": "pong"}
+@router.get("", response_model=list[RegisterUserV1Response])
+async def list_users(
+    response: Response,
+):
+    user_repository = UserMongoRepository()
+    try:
+        users = user_repository.list_users()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str("Internal server error"),
+        )
+
+    response.status_code = status.HTTP_200_OK
+    response.headers[HEADER_CONTENT_TYPE] = (
+        HEADER_CONTENT_TYPE_APPLICATION_JSON
+    )
+
+    return users
 
 
 @router.get("/{id}")
@@ -53,7 +69,8 @@ async def register(
         )
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str("Internal server error"),
         )
 
     response.status_code = status.HTTP_201_CREATED
