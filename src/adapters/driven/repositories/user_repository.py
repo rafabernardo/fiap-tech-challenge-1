@@ -44,6 +44,10 @@ class UserMongoRepository(UserRepositoryInterface):
     def _exists_by_cpf(self, cpf: str) -> bool:
         return self.collection.count_documents({"cpf": cpf}) > 0
 
+    def _exists_by_id(self, id: str) -> bool:
+        query = self.get_user_by_id_query(id=id)
+        return self.collection.count_documents(query) > 0
+
     def _get_by_cpf(self, cpf: str) -> User | None:
         query = self.get_user_by_cpf_query(cpf=cpf)
         user = self.collection.find_one(query)
@@ -51,6 +55,12 @@ class UserMongoRepository(UserRepositoryInterface):
             final_user = replace_id_key(user)
             return User(**final_user)
         return None
+
+    def _delete_user(self, id: str) -> bool:
+        query = self.get_user_by_id_query(id=id)
+        result = self.collection.delete_one(query)
+        was_user_deleted = result.deleted_count > 0
+        return was_user_deleted
 
     @staticmethod
     def get_user_by_id_query(id: str) -> dict:
