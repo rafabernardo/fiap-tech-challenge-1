@@ -21,7 +21,7 @@ router = APIRouter(prefix="/order")
 
 
 @router.get("", response_model=ListOrderV1Response)
-async def list_users(
+async def list_orders(
     response: Response,
     page: int = Query(default=1, gt=0),
     page_size: int = Query(default=10, gt=0, le=100),
