@@ -3,8 +3,8 @@ from fastapi import APIRouter, HTTPException, Query, Response, status
 from adapters.driven.repositories.order_repository import OrderMongoRepository
 from adapters.driven.repositories.utils import get_pagination_info
 from adapters.driver.entrypoints.v1.exceptions.commons import (
-    InternalServerErrorException,
-    NoDocumentsFoundException,
+    InternalServerErrorHTTPException,
+    NoDocumentsFoundHTTPException,
 )
 from adapters.driver.entrypoints.v1.models.commons import (
     DeleteDocumentV1Response,
@@ -14,6 +14,9 @@ from adapters.driver.entrypoints.v1.models.order import (
     OrderV1Response,
     RegisterOrderV1Request,
     RegisterOrderV1Response,
+)
+from core.application.exceptions.commons_exceptions import (
+    NoDocumentsFoundException,
 )
 from core.application.services.order_service import OrderService
 from core.domain.models.order import Order
@@ -64,7 +67,7 @@ async def get_user_by_id(id: str, response: Response) -> OrderV1Response:
     order = order_service.get_order_by_id(id)
 
     if order is None:
-        raise NoDocumentsFoundException()
+        raise NoDocumentsFoundHTTPException()
 
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
@@ -88,7 +91,7 @@ async def register(
     try:
         created_order = service.register_order(order)
     except Exception:
-        raise InternalServerErrorException()
+        raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_201_CREATED
     response.headers[HEADER_CONTENT_TYPE] = (
@@ -103,13 +106,15 @@ async def delete(id: str, response: Response) -> DeleteDocumentV1Response:
     repository = OrderMongoRepository()
     service = OrderService(repository)
 
-    order = service.get_order_by_id(id)
-    if order is None:
-        raise NoDocumentsFoundException()
+    try:
+        was_order_deleted = service.delete_order(id)
+    except NoDocumentsFoundException as exc:
+        raise NoDocumentsFoundHTTPException(detail=exc.message)
+    except Exception as exc:
+        raise InternalServerErrorHTTPException()
 
-    was_order_deleted = service.delete_order(id)
     if not was_order_deleted:
-        raise InternalServerErrorException()
+        raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_204_NO_CONTENT
     response.headers[HEADER_CONTENT_TYPE] = (
