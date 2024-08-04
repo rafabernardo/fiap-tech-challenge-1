@@ -14,6 +14,10 @@ class OrderService:
         new_order = self.repository.add(order)
         return new_order
 
+    def get_order_by_id(self, id: str) -> Order:
+        order = self.repository.get_by_id(id)
+        return order
+
     def list_orders(
         self, filter: dict, page: int, page_size: int
     ) -> list[Order]:
