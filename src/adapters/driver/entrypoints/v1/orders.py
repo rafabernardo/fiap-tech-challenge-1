@@ -2,6 +2,9 @@ from fastapi import APIRouter, HTTPException, Query, Response, status
 
 from adapters.driven.repositories.order_repository import OrderMongoRepository
 from adapters.driven.repositories.utils import get_pagination_info
+from adapters.driver.entrypoints.v1.exceptions.commons import (
+    NoDocumentsFoundException,
+)
 from adapters.driver.entrypoints.v1.models.order import (
     ListOrderV1Response,
     OrderV1Response,
@@ -30,11 +33,9 @@ async def list_users(
         filter={}, page=page, page_size=page_size
     )
     total_orders = order_service.count_orders(filter={})
+
     if total_orders == 0:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Order not found. id={id}",
-        )
+        raise NoDocumentsFoundException()
 
     pagination_info = get_pagination_info(
         total_results=total_orders, page=page, page_size=page_size
@@ -57,11 +58,10 @@ async def get_user_by_id(id: str, response: Response) -> OrderV1Response:
     order_repository = OrderMongoRepository()
     order_service = OrderService(repository=order_repository)
     order = order_service.get_order_by_id(id)
+
     if order is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Order not found. id={id}",
-        )
+        raise NoDocumentsFoundException()
+
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
         HEADER_CONTENT_TYPE_APPLICATION_JSON
