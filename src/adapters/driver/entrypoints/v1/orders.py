@@ -120,7 +120,6 @@ async def delete(id: str, response: Response) -> DeleteDocumentV1Response:
     response.headers[HEADER_CONTENT_TYPE] = (
         HEADER_CONTENT_TYPE_APPLICATION_JSON
     )
-    return DeleteDocumentV1Response(deleted_document=id)
 
 
 @router.patch("/{id}")
