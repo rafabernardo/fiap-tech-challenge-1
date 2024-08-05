@@ -30,6 +30,7 @@ router = APIRouter(prefix="/users")
 async def list_users(
     response: Response,
 ):
+
     user_repository = UserMongoRepository()
     try:
         users = user_repository.list_users()
@@ -53,11 +54,11 @@ async def get_user_by_id(
     try:
         user = user_repository.get_by_id(id)
 
-        if not user:
-            raise NoDocumentsFoundHTTPException()
     except Exception:
         raise InternalServerErrorHTTPException()
 
+    if not user:
+        raise NoDocumentsFoundHTTPException()
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
         HEADER_CONTENT_TYPE_APPLICATION_JSON
@@ -72,18 +73,19 @@ async def get_user_by_cpf(
     response: Response,
 ):
     user_repository = UserMongoRepository()
+    service = UserService(user_repository)
     try:
-        user = user_repository.get_by_cpf(cpf)
+        user = service.get_user_by_cpf(cpf)
 
-        if user is None:
-            raise NoDocumentsFoundHTTPException()
-    except UserInvalidFormatDataError:
+    except UserInvalidFormatDataError as e:
         raise UnprocessableEntityErrorHTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Invalid CPF",
+            detail=e.message,
         )
     except Exception:
         raise InternalServerErrorHTTPException()
+
+    if user is None:
+        raise NoDocumentsFoundHTTPException()
 
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
