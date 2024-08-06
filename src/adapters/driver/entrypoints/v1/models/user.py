@@ -16,3 +16,7 @@ class UserV1Response(BaseModel):
     cpf: str | None = None
     created_at: datetime
     updated_at: datetime
+
+
+class IdentifyUserV1Request(BaseModel):
+    cpf: str
