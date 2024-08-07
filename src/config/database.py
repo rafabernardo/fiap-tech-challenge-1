@@ -28,9 +28,9 @@ def mongo_transactional(func):
             with session.start_transaction():
                 result = func(*args, **kwargs, session=session)
             return result
-        except PyMongoError as e:
+        except PyMongoError as exc:
             session.abort_transaction()
-            print(f"Transaction aborted due to error: {e}")
+            print(f"Transaction aborted due to error: {exc}")
             raise
         finally:
             session.end_session()

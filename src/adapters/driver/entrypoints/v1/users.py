@@ -77,9 +77,9 @@ async def get_user_by_cpf(
     try:
         user = service.get_user_by_cpf(cpf)
 
-    except UserInvalidFormatDataError as e:
+    except UserInvalidFormatDataError as exc:
         raise UnprocessableEntityErrorHTTPException(
-            detail=e.message,
+            detail=exc.message,
         )
     except Exception:
         raise InternalServerErrorHTTPException()
