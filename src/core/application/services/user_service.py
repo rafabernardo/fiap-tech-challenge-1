@@ -1,7 +1,9 @@
+from core.application.exceptions.commons_exceptions import (
+    NoDocumentsFoundException,
+)
 from core.application.exceptions.user_exceptions import (
     UserAlreadyExistsError,
     UserInvalidFormatDataError,
-    UserNotFoundError,
 )
 from core.application.validators.user import validate_cpf, validate_email
 from core.domain.models.user import User
@@ -38,6 +40,6 @@ class UserService:
     def delete_user(self, id: str) -> bool:
         user_exists = self.repository.exists_by_id(id)
         if not user_exists:
-            raise UserNotFoundError()
+            raise NoDocumentsFoundException()
 
         return self.repository.delete_order(id)

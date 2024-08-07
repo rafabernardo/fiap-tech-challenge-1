@@ -1,14 +1,21 @@
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, Response, status
 
 from adapters.driven.repositories.user_repository import UserMongoRepository
+from adapters.driver.entrypoints.v1.exceptions.commons import (
+    InternalServerErrorHTTPException,
+    NoDocumentsFoundHTTPException,
+    UnprocessableEntityErrorHTTPException,
+)
 from adapters.driver.entrypoints.v1.models.user import (
     RegisterUserV1Request,
     UserV1Response,
 )
+from core.application.exceptions.commons_exceptions import (
+    NoDocumentsFoundException,
+)
 from core.application.exceptions.user_exceptions import (
     UserAlreadyExistsError,
     UserInvalidFormatDataError,
-    UserNotFoundError,
 )
 from core.application.services.user_service import UserService
 from core.domain.models.user import User
@@ -23,14 +30,12 @@ router = APIRouter(prefix="/users")
 async def list_users(
     response: Response,
 ):
+
     user_repository = UserMongoRepository()
     try:
         users = user_repository.list_users()
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str("Internal server error"),
-        )
+    except Exception:
+        raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
@@ -49,17 +54,11 @@ async def get_user_by_id(
     try:
         user = user_repository.get_by_id(id)
 
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found",
-            )
     except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str("Internal server error"),
-        )
+        raise InternalServerErrorHTTPException()
 
+    if not user:
+        raise NoDocumentsFoundHTTPException()
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
         HEADER_CONTENT_TYPE_APPLICATION_JSON
@@ -74,23 +73,19 @@ async def get_user_by_cpf(
     response: Response,
 ):
     user_repository = UserMongoRepository()
+    service = UserService(user_repository)
     try:
-        user = user_repository.get_by_cpf(cpf)
+        user = service.get_user_by_cpf(cpf)
 
-        if user is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found",
-            )
-    except UserInvalidFormatDataError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=e.message
+    except UserInvalidFormatDataError as exc:
+        raise UnprocessableEntityErrorHTTPException(
+            detail=exc.message,
         )
     except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str("Internal server error"),
-        )
+        raise InternalServerErrorHTTPException()
+
+    if user is None:
+        raise NoDocumentsFoundHTTPException()
 
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
@@ -110,19 +105,12 @@ async def register(
     user = User(**create_user_request.model_dump())
     try:
         created_user = service.register_user(user)
-    except UserAlreadyExistsError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=e.message
-        )
-    except UserInvalidFormatDataError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=e.message
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str("Internal server error"),
-        )
+    except UserAlreadyExistsError as exc:
+        raise NoDocumentsFoundHTTPException(detail=exc.message)
+    except UserInvalidFormatDataError as exc:
+        raise UnprocessableEntityErrorHTTPException(detail=exc.message)
+    except Exception:
+        raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_201_CREATED
     response.headers[HEADER_CONTENT_TYPE] = (
@@ -147,16 +135,12 @@ async def delete(
             response.status_code = status.HTTP_204_NO_CONTENT
             return
 
-    except UserNotFoundError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str("Internal server error"),
-        )
+        raise InternalServerErrorHTTPException()
+
+    except NoDocumentsFoundException:
+        raise NoDocumentsFoundHTTPException()
+    except Exception:
+        raise InternalServerErrorHTTPException()
 
 
 @router.patch("/{id}")
