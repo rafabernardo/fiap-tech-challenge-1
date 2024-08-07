@@ -7,7 +7,8 @@ class ProductsRepositoryInterface(abc.ABC):
     def __init__(self): ...
 
     def add(self, product: Product) -> None:
-        self._add(product)
+        new_product = self._add(product)
+        return new_product
 
     def get_by_id(self, id: int) -> Product:
         product = self._get_by_id(id)
