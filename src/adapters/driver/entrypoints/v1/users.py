@@ -169,4 +169,4 @@ async def identify_user(
     except UserInvalidFormatDataError as exc:
         raise UnprocessableEntityErrorHTTPException(exc.message)
     except Exception:
-        InternalServerErrorHTTPException
+        raise InternalServerErrorHTTPException()
