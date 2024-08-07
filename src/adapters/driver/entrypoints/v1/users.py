@@ -166,13 +166,7 @@ async def identify_user(
 
     except NoDocumentsFoundException:
         raise NoDocumentsFoundHTTPException()
-    except UserInvalidFormatDataError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=e.message,
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str("Internal server error"),
-        )
+    except UserInvalidFormatDataError as exc:
+        raise UnprocessableEntityErrorHTTPException(exc)
+    except Exception:
+        InternalServerErrorHTTPException
