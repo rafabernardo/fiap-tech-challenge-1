@@ -148,7 +148,7 @@ async def delete(
         raise InternalServerErrorHTTPException()
 
 
-@router.put("/identify/{id}", response_model=UserV1Response)
+@router.patch("/identify/{id}", response_model=UserV1Response)
 async def identify_user(
     id: str,
     identify_user_request: IdentifyUserV1Request,
