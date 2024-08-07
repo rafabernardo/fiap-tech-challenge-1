@@ -32,6 +32,10 @@ class UserRepositoryInterface(abc.ABC):
     def delete_order(self, id: str) -> bool:
         return self._delete_user(id)
 
+    def update_user(self, id: str, **kwargs) -> User:
+        user = self._update_user(id, **kwargs)
+        return user
+
     @abc.abstractmethod
     def _add(self, user: User) -> User:
         raise NotImplementedError
@@ -58,4 +62,8 @@ class UserRepositoryInterface(abc.ABC):
 
     @abc.abstractmethod
     def _delete_user(self, id: str) -> bool:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _update_user(self, id: str, **kwargs) -> User:
         raise NotImplementedError

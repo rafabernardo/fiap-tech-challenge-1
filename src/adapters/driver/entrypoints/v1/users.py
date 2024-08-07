@@ -7,6 +7,7 @@ from adapters.driver.entrypoints.v1.exceptions.commons import (
     UnprocessableEntityErrorHTTPException,
 )
 from adapters.driver.entrypoints.v1.models.user import (
+    IdentifyUserV1Request,
     RegisterUserV1Request,
     UserV1Response,
 )
@@ -143,6 +144,35 @@ async def delete(
         raise InternalServerErrorHTTPException()
 
 
-@router.patch("/{id}")
-async def update(id: int):
-    return {"msg": id}
+@router.patch("/identify/{id}", response_model=UserV1Response)
+async def identify_user(
+    id: str,
+    identify_user_request: IdentifyUserV1Request,
+    response: Response,
+):
+    user_repository = UserMongoRepository()
+    service = UserService(user_repository)
+
+    try:
+
+        updated_user = service.identify_user(id, identify_user_request.cpf)
+
+        response.status_code = status.HTTP_200_OK
+        response.headers[HEADER_CONTENT_TYPE] = (
+            HEADER_CONTENT_TYPE_APPLICATION_JSON
+        )
+
+        return updated_user
+
+    except NoDocumentsFoundException:
+        raise NoDocumentsFoundHTTPException()
+    except UserInvalidFormatDataError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=e.message,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str("Internal server error"),
+        )

@@ -1,7 +1,9 @@
+from datetime import datetime
+
 from bson import ObjectId
+from pymongo import ReturnDocument
 
 from adapters.driven.repositories.utils import (
-    clean_cpf_to_db,
     prepare_document_to_db,
     replace_id_key,
 )
@@ -18,8 +20,6 @@ class UserMongoRepository(UserRepositoryInterface):
     def _add(self, user: User) -> User:
         user_data = user.model_dump()
         user_to_db = prepare_document_to_db(user_data)
-        if user_to_db["cpf"] is not None:
-            user_to_db["cpf"] = clean_cpf_to_db(user_to_db["cpf"])
         self.collection.insert_one(user_to_db)
         final_user = replace_id_key(user_to_db)
 
@@ -62,6 +62,18 @@ class UserMongoRepository(UserRepositoryInterface):
         was_user_deleted = result.deleted_count > 0
         return was_user_deleted
 
+    def _update_user(self, id, **kwargs) -> User:
+        id_query = self.get_user_by_id_query(id)
+        user_update_data = self.get_user_update_query(kwargs)
+        updated_user = self.collection.find_one_and_update(
+            filter=id_query,
+            update=user_update_data,
+            return_document=ReturnDocument.AFTER,
+        )
+
+        updated_user = replace_id_key(updated_user)
+        return User(**updated_user)
+
     @staticmethod
     def get_user_by_id_query(id: str) -> dict:
         query = {"_id": ObjectId(id)}
@@ -69,11 +81,17 @@ class UserMongoRepository(UserRepositoryInterface):
 
     @staticmethod
     def get_user_by_cpf_query(cpf: str) -> dict:
-        clean_cpf = clean_cpf_to_db(cpf)
-        query = {"cpf": clean_cpf}
+        query = {"cpf": cpf}
         return query
 
     @staticmethod
     def get_list_users_query() -> dict:
         query = {}
+        return query
+
+    @staticmethod
+    def get_user_update_query(data: dict) -> dict:
+        now = datetime.now()
+        data["updated_at"] = now
+        query = {"$set": data}
         return query

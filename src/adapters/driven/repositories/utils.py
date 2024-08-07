@@ -38,7 +38,3 @@ def get_pagination_info(
         has_previous=has_previous,
     )
     return pagination_info
-
-
-def clean_cpf_to_db(cpf: str) -> str:
-    return cpf.replace(".", "").replace("-", "")
