@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, Response, status
 
 from adapters.driven.repositories.user_repository import UserMongoRepository
 from adapters.driver.entrypoints.v1.exceptions.commons import (
@@ -105,14 +105,10 @@ async def register(
     user = User(**create_user_request.model_dump())
     try:
         created_user = service.register_user(user)
-    except UserAlreadyExistsError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=e.message
-        )
-    except UserInvalidFormatDataError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=e.message
-        )
+    except UserAlreadyExistsError as exc:
+        raise NoDocumentsFoundHTTPException(detail=exc.message)
+    except UserInvalidFormatDataError as exc:
+        raise UnprocessableEntityErrorHTTPException(detail=exc.message)
     except Exception:
         raise InternalServerErrorHTTPException()
 
