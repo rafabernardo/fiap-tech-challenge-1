@@ -6,7 +6,7 @@ from core.domain.models.product import Product
 class ProductsRepositoryInterface(abc.ABC):
     def __init__(self): ...
 
-    def add(self, product: Product) -> None:
+    def add(self, product: Product) -> Product:
         new_product = self._add(product)
         return new_product
 
@@ -19,7 +19,7 @@ class ProductsRepositoryInterface(abc.ABC):
         return products
 
     @abc.abstractmethod
-    def _add(self, product: Product) -> None:
+    def _add(self, product: Product) -> Product:
         raise NotImplementedError
 
     @abc.abstractmethod
