@@ -41,9 +41,6 @@ async def list_orders(
     )
     total_orders = order_service.count_orders(filter={})
 
-    if total_orders == 0:
-        raise NoDocumentsFoundException()
-
     pagination_info = get_pagination_info(
         total_results=total_orders, page=page, page_size=page_size
     )
