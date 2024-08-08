@@ -6,6 +6,7 @@ from adapters.driven.repositories.product_repository import (
 from adapters.driven.repositories.utils import get_pagination_info
 from adapters.driver.entrypoints.v1.exceptions.commons import (
     InternalServerErrorHTTPException,
+    NoDocumentsFoundHTTPException,
 )
 from adapters.driver.entrypoints.v1.models.product import (
     ListProductV1Response,
@@ -65,9 +66,26 @@ def list_products(
         raise InternalServerErrorHTTPException()
 
 
-@router.get("/{id}")
-async def get_product_by_id(id: int):
-    return {"msg": id}
+@router.get("/{id}", response_model=ProductV1Response)
+async def get_product_by_id(
+    id: str,
+    response: Response,
+):
+    repository = ProductMongoRepository()
+    try:
+        product = repository.get_by_id(id)
+
+    except Exception:
+        raise InternalServerErrorHTTPException()
+
+    if not product:
+        raise NoDocumentsFoundHTTPException()
+    response.status_code = status.HTTP_200_OK
+    response.headers[HEADER_CONTENT_TYPE] = (
+        HEADER_CONTENT_TYPE_APPLICATION_JSON
+    )
+
+    return product
 
 
 @router.post("", response_model=ProductV1Response)

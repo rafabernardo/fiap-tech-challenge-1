@@ -10,7 +10,7 @@ class ProductsRepositoryInterface(abc.ABC):
         new_product = self._add(product)
         return new_product
 
-    def get_by_id(self, id: int) -> Product:
+    def get_by_id(self, id: str) -> Product:
         product = self._get_by_id(id)
         return product
 
@@ -31,7 +31,7 @@ class ProductsRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _get_by_id(self, id: int) -> Product:
+    def _get_by_id(self, id: str) -> Product:
         raise NotImplementedError
 
     @abc.abstractmethod
