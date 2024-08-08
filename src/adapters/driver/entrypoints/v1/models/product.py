@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, field_validator
 
+from adapters.driver.entrypoints.v1.models.page import PageV1Response
 from core.domain.models.product import Category
 
 
@@ -26,3 +27,7 @@ class ProductV1Response(ProductV1Request):
     id: str
     created_at: datetime
     updated_at: datetime
+
+
+class ListProductV1Response(PageV1Response):
+    results: list[ProductV1Response]
