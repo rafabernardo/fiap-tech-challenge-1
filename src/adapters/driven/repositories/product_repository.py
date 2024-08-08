@@ -27,12 +27,17 @@ class ProductMongoRepository(ProductsRepositoryInterface):
             return Product(**product)
         return None
 
-    def _list_products(self) -> list[Product] | None:
-        query = self.get_list_product_query()
-        products = self.collection.find(query)
-        if products:
-            return [Product(**product) for product in products]
-        return None
+    def _list_products(
+        self, filter: dict, page: int, page_size: int
+    ) -> list[Product]:
+        skip = (page - 1) * page_size
+        products = list(
+            self.collection.find(filter).skip(skip).limit(page_size)
+        )
+        return [Product(**replace_id_key(product)) for product in products]
+
+    def _count_products(self, filter: dict) -> int:
+        return self.collection.count_documents(filter)
 
     @staticmethod
     def get_product_by_id_query(id: int) -> dict:

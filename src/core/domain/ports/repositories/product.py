@@ -14,9 +14,17 @@ class ProductsRepositoryInterface(abc.ABC):
         product = self._get_by_id(id)
         return product
 
-    def list_products(self) -> list[Product]:
-        products = self._list_products()
+    def list_products(
+        self, filter: dict, page: int, page_size: int
+    ) -> list[Product]:
+        products = self._list_products(
+            filter=filter, page=page, page_size=page_size
+        )
         return products
+
+    def count_products(self, filter: dict) -> int:
+        total_products = self._count_products(filter=filter)
+        return total_products
 
     @abc.abstractmethod
     def _add(self, product: Product) -> Product:
@@ -27,5 +35,11 @@ class ProductsRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _list_products(self) -> list[Product]:
+    def _list_products(
+        self, filter: dict, page: int, page_size: int
+    ) -> list[Product]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _count_products(self, filter: dict) -> int:
         raise NotImplementedError
