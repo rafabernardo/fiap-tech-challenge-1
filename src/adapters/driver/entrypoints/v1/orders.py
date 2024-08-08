@@ -121,7 +121,7 @@ async def delete(id: str, response: Response) -> DeleteDocumentV1Response:
         HEADER_CONTENT_TYPE_APPLICATION_JSON
     )
 
-
+@router.patch("/fake-checkout/{order_id}")
 @router.patch("/payment-status/{order_id}")
 async def set_payment_status(
     order_id: str,
