@@ -1,3 +1,5 @@
+from bson import ObjectId
+
 from adapters.driven.repositories.utils import (
     prepare_document_to_db,
     replace_id_key,
@@ -20,11 +22,12 @@ class ProductMongoRepository(ProductsRepositoryInterface):
         final_product = replace_id_key(product_to_db)
         return Product(**final_product)
 
-    def _get_by_id(self, id: int) -> Product | None:
+    def _get_by_id(self, id: str) -> Product | None:
         query = self.get_product_by_id_query(id=id)
         product = self.collection.find_one(query)
         if product:
-            return Product(**product)
+            final_product = replace_id_key(product)
+            return Product(**final_product)
         return None
 
     def _list_products(
@@ -40,8 +43,8 @@ class ProductMongoRepository(ProductsRepositoryInterface):
         return self.collection.count_documents(filter)
 
     @staticmethod
-    def get_product_by_id_query(id: int) -> dict:
-        query = {"id": id}
+    def get_product_by_id_query(id: str) -> dict:
+        query = {"_id": ObjectId(id)}
         return query
 
     @staticmethod
