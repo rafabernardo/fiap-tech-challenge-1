@@ -1,25 +1,16 @@
 from datetime import datetime
-from enum import Enum
 
 from pydantic import BaseModel, field_validator
 
-
-class Category(Enum):
-    meal = "meal"
-    side_dish = "side-dish"
-    beverage = "beverage"
-    dessert = "dessert"
+from core.domain.models.product import Category
 
 
-class Product(BaseModel):
-    id: str | None = None
+class ProductV1Request(BaseModel):
     name: str
     category: str
     price: int
     description: str
     image: str
-    created_at: datetime | None = None
-    updated_at: datetime | None = None
 
     @field_validator("category")
     @classmethod
@@ -29,3 +20,9 @@ class Product(BaseModel):
             return v
         except ValueError:
             raise ValueError(f"Invalid category value: {v}")
+
+
+class ProductV1Response(ProductV1Request):
+    id: str
+    created_at: datetime
+    updated_at: datetime

@@ -1,3 +1,7 @@
+from adapters.driven.repositories.utils import (
+    prepare_document_to_db,
+    replace_id_key,
+)
 from config.database import get_mongo_database
 from core.domain.models.product import Product
 from core.domain.ports.repositories.product import ProductsRepositoryInterface
@@ -8,8 +12,13 @@ class ProductMongoRepository(ProductsRepositoryInterface):
         self.database = get_mongo_database()
         self.collection = self.database["Products"]
 
-    def _add(self, product: Product) -> None:
-        self.collection.insert_one(product.model_dump())
+    def _add(self, product: Product) -> Product:
+        product_data = product.model_dump()
+        product_to_db = prepare_document_to_db(product_data)
+        self.collection.insert_one(product_to_db)
+
+        final_product = replace_id_key(product_to_db)
+        return Product(**final_product)
 
     def _get_by_id(self, id: int) -> Product | None:
         query = self.get_product_by_id_query(id=id)
