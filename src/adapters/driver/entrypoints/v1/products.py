@@ -42,8 +42,7 @@ async def register(
     try:
         product = Product(**create_product_request.model_dump())
         product = service.register_product(product)
-    except Exception as e:
-        print(e)
+    except Exception:
         raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_201_CREATED
