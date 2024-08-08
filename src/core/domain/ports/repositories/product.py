@@ -31,7 +31,7 @@ class ProductsRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _get_by_id(self, id: int) -> Product:
+    def _get_by_id(self, id: str) -> Product:
         raise NotImplementedError
 
     @abc.abstractmethod
