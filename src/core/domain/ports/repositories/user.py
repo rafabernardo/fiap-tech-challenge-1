@@ -29,7 +29,7 @@ class UserRepositoryInterface(abc.ABC):
         user = self._get_by_cpf(cpf)
         return user
 
-    def delete_order(self, id: str) -> bool:
+    def delete_user(self, id: str) -> bool:
         return self._delete_user(id)
 
     def update_user(self, id: str, **kwargs) -> User:
