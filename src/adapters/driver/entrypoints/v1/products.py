@@ -32,9 +32,9 @@ def list_products(
         repository = ProductMongoRepository()
         service = ProductService(repository)
 
-        filter = {
-            "category": category.value if category else None,
-        }
+        filter = {}
+        if category:
+            filter["category"] = category
 
         products = service.list_products(
             filter=filter,
