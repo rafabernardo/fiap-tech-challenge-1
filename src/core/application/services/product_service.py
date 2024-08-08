@@ -1,3 +1,6 @@
+from core.application.exceptions.commons_exceptions import (
+    NoDocumentsFoundException,
+)
 from core.domain.models.product import Product
 from core.domain.ports.repositories.product import ProductsRepositoryInterface
 
@@ -22,3 +25,10 @@ class ProductService:
     def count_products(self, filter: dict) -> int:
         total_products = self.repository.count_products(filter=filter)
         return total_products
+
+    def delete_product(self, id: str) -> bool:
+        product_exists = self.repository.exists_by_id(id)
+        if not product_exists:
+            raise NoDocumentsFoundException()
+
+        return self.repository.delete_product(id)
