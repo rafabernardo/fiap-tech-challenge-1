@@ -34,3 +34,7 @@ class RegisterOrderV1Response(OrderV1Response): ...
 
 class ListOrderV1Response(PageV1Response):
     results: list[OrderV1Response]
+
+
+class PatchPaymentResultV1Request(BaseModel):
+    result: bool
