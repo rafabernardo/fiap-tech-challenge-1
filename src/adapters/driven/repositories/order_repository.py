@@ -13,7 +13,7 @@ from core.domain.ports.repositories.order import OrderRepositoryInterface
 class OrderMongoRepository(OrderRepositoryInterface):
     def __init__(self):
         self.database = get_mongo_database()
-        self.collection = self.database["Order"]
+        self.collection = self.database["Orders"]
         super().__init__()
 
     def _add(self, order: Order) -> Order:
@@ -41,18 +41,14 @@ class OrderMongoRepository(OrderRepositoryInterface):
             return None
         return [Order(**replace_id_key(order)) for order in orders]
 
-    def _update_order(self, order: Order) -> Order:
-        order_data = order.model_dump()
-        order_to_db = prepare_document_to_db(order_data)
-
-        order_filter = self.get_order_by_id_query(order.id)
-        order_update_data = self.get_order_update_data(order_to_db)
+    def _update_order(self, id, **kwargs) -> Order:
+        id_query = self.get_order_by_id_query(id)
+        order_update_data = self.get_order_update_data(kwargs)
         updated_order = self.collection.find_one_and_update(
-            filter=order_filter,
+            filter=id_query,
             update=order_update_data,
             return_document=ReturnDocument.AFTER,
         )
-
         updated_order = replace_id_key(updated_order)
         return Order(**updated_order)
 

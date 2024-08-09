@@ -1,8 +1,9 @@
 from core.application.exceptions.commons_exceptions import (
+    DataConflictException,
     NoDocumentsFoundException,
 )
 from core.application.services.order_number_service import OrderNumberService
-from core.domain.models.order import Order
+from core.domain.models.order import Order, PaymentStatus
 from core.domain.ports.repositories.order import OrderRepositoryInterface
 
 order_number_service = OrderNumberService()
@@ -39,3 +40,19 @@ class OrderService:
             raise NoDocumentsFoundException()
         was_order_deleted = self.repository.delete_order(id=id)
         return was_order_deleted
+
+    def set_payment_status(self, id: str, payment_result: bool):
+
+        order = self.repository.get_by_id(id)
+        if not order:
+            raise NoDocumentsFoundException()
+        if PaymentStatus(order.payment_status) is not PaymentStatus.pending:
+            raise DataConflictException()
+
+        new_payment_status = (
+            PaymentStatus.paid if payment_result else PaymentStatus.canceled
+        )
+        updated_order = self.repository.update_order(
+            id, payment_status=new_payment_status.value
+        )
+        return updated_order
