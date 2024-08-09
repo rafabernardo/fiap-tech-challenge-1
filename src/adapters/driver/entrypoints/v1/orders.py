@@ -110,7 +110,7 @@ async def delete(id: str, response: Response) -> DeleteDocumentV1Response:
         was_order_deleted = service.delete_order(id)
     except NoDocumentsFoundException as exc:
         raise NoDocumentsFoundHTTPException(detail=exc.message)
-    except Exception as exc:
+    except Exception:
         raise InternalServerErrorHTTPException()
 
     if not was_order_deleted:
@@ -122,7 +122,6 @@ async def delete(id: str, response: Response) -> DeleteDocumentV1Response:
     )
 
 @router.patch("/fake-checkout/{order_id}")
-@router.patch("/payment-status/{order_id}")
 async def set_payment_status(
     order_id: str,
     payment_result: PatchPaymentResultV1Request,
