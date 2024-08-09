@@ -26,6 +26,13 @@ class ProductsRepositoryInterface(abc.ABC):
         total_products = self._count_products(filter=filter)
         return total_products
 
+    def delete_product(self, id: str) -> bool:
+        was_product_deleted = self._delete_product(id=id)
+        return was_product_deleted
+
+    def exists_by_id(self, id: str) -> bool:
+        return self._exists_by_id(id)
+
     @abc.abstractmethod
     def _add(self, product: Product) -> Product:
         raise NotImplementedError
@@ -42,4 +49,12 @@ class ProductsRepositoryInterface(abc.ABC):
 
     @abc.abstractmethod
     def _count_products(self, filter: dict) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _delete_product(self, id: str) -> bool:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _exists_by_id(self, id: str) -> bool:
         raise NotImplementedError

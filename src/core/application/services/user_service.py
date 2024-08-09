@@ -46,7 +46,7 @@ class UserService:
         if not user_exists:
             raise NoDocumentsFoundException()
 
-        return self.repository.delete_order(id)
+        return self.repository.delete_user(id)
 
     def identify_user(self, id: str, cpf: str) -> User:
         user_exists = self.repository.exists_by_id(id)

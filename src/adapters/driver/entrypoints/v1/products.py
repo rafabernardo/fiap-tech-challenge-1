@@ -13,6 +13,9 @@ from adapters.driver.entrypoints.v1.models.product import (
     ProductV1Request,
     ProductV1Response,
 )
+from core.application.exceptions.commons_exceptions import (
+    NoDocumentsFoundException,
+)
 from core.application.services.product_service import ProductService
 from core.domain.models.product import Category, Product
 
@@ -110,9 +113,28 @@ async def register(
     return product
 
 
-@router.delete("/delete/{id}")
-async def delete(id: int):
-    return {"msg": id}
+@router.delete("/{id}")
+async def delete(
+    id: str,
+    response: Response,
+):
+    product_repository = ProductMongoRepository()
+    service = ProductService(product_repository)
+
+    try:
+        was_product_deleted = service.delete_product(id)
+        if not was_product_deleted:
+            raise InternalServerErrorHTTPException()
+
+    except NoDocumentsFoundException:
+        raise NoDocumentsFoundHTTPException()
+    except Exception:
+        raise InternalServerErrorHTTPException()
+
+    response.status_code = status.HTTP_204_NO_CONTENT
+    response.headers[HEADER_CONTENT_TYPE] = (
+        HEADER_CONTENT_TYPE_APPLICATION_JSON
+    )
 
 
 @router.patch("/{id}")

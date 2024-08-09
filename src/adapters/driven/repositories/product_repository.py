@@ -42,6 +42,16 @@ class ProductMongoRepository(ProductsRepositoryInterface):
     def _count_products(self, filter: dict) -> int:
         return self.collection.count_documents(filter)
 
+    def _exists_by_id(self, id: str) -> bool:
+        query = self.get_product_by_id_query(id=id)
+        return self.collection.count_documents(query) > 0
+
+    def _delete_product(self, id: str) -> bool:
+        query = self.get_product_by_id_query(id=id)
+        result = self.collection.delete_one(query)
+        was_user_deleted = result.deleted_count > 0
+        return was_user_deleted
+
     @staticmethod
     def get_product_by_id_query(id: str) -> dict:
         query = {"_id": ObjectId(id)}
