@@ -30,9 +30,9 @@ class OrderRepositoryInterface(abc.ABC):
         was_order_deleted = self._delete_order(id=id)
         return was_order_deleted
 
-    def update_order(self, order: Order) -> Order:
-        updated_order = self._update_order(order)
-        return updated_order
+    def update_order(self, id: str, **kwargs) -> Order:
+        order = self._update_order(id, **kwargs)
+        return order
 
     def add_order_item(self, id: str, order_item: OrderItem) -> None:
         self._add_order_item(id, order_item)
@@ -67,7 +67,7 @@ class OrderRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _update_order(self, order: Order) -> Order:
+    def _update_order(self, id: str, **kwargs) -> Order:
         raise NotImplementedError
 
     @abc.abstractmethod

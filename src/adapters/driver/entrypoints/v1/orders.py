@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, Query, Response, status
+from fastapi import APIRouter, Query, Response, status
 
 from adapters.driven.repositories.order_repository import OrderMongoRepository
 from adapters.driven.repositories.utils import get_pagination_info
 from adapters.driver.entrypoints.v1.exceptions.commons import (
+    ConflictErrorHTTPException,
     InternalServerErrorHTTPException,
     NoDocumentsFoundHTTPException,
 )
@@ -12,10 +13,12 @@ from adapters.driver.entrypoints.v1.models.commons import (
 from adapters.driver.entrypoints.v1.models.order import (
     ListOrderV1Response,
     OrderV1Response,
+    PatchPaymentResultV1Request,
     RegisterOrderV1Request,
     RegisterOrderV1Response,
 )
 from core.application.exceptions.commons_exceptions import (
+    DataConflictException,
     NoDocumentsFoundException,
 )
 from core.application.services.order_service import OrderService
@@ -107,7 +110,7 @@ async def delete(id: str, response: Response) -> DeleteDocumentV1Response:
         was_order_deleted = service.delete_order(id)
     except NoDocumentsFoundException as exc:
         raise NoDocumentsFoundHTTPException(detail=exc.message)
-    except Exception as exc:
+    except Exception:
         raise InternalServerErrorHTTPException()
 
     if not was_order_deleted:
@@ -118,7 +121,25 @@ async def delete(id: str, response: Response) -> DeleteDocumentV1Response:
         HEADER_CONTENT_TYPE_APPLICATION_JSON
     )
 
+@router.patch("/fake-checkout/{order_id}")
+async def set_payment_status(
+    order_id: str,
+    payment_result: PatchPaymentResultV1Request,
+    response: Response,
+):
+    repository = OrderMongoRepository()
+    service = OrderService(repository)
 
-@router.patch("/{id}")
-async def update(id: str):
-    return {"msg": id}
+    try:
+        service.set_payment_status(order_id, payment_result.result)
+    except NoDocumentsFoundException:
+        raise NoDocumentsFoundHTTPException()
+    except DataConflictException:
+        raise ConflictErrorHTTPException("Order payment can not be modified")
+    except Exception:
+        raise InternalServerErrorHTTPException()
+
+    response.status_code = status.HTTP_204_NO_CONTENT
+    response.headers[HEADER_CONTENT_TYPE] = (
+        HEADER_CONTENT_TYPE_APPLICATION_JSON
+    )
