@@ -45,7 +45,7 @@ class OrderMongoRepository(OrderRepositoryInterface):
         id_query = self.get_order_by_id_query(id)
         order_update_data = self.get_order_update_data(kwargs)
         updated_order = self.collection.find_one_and_update(
-            orders_filter=id_query,
+            filter=id_query,
             update=order_update_data,
             return_document=ReturnDocument.AFTER,
         )

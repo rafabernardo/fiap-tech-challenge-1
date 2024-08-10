@@ -37,6 +37,7 @@ class Order(BaseModel):
     order_number: int | None = None
     owner_id: str | None = None
     payment_status: str  # PaymentStatus
+    paid_at: datetime | None = None
 
     @field_validator("status")
     @classmethod

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from core.application.exceptions.commons_exceptions import (
     DataConflictException,
     NoDocumentsFoundException,
@@ -52,9 +54,18 @@ class OrderService:
         new_payment_status = (
             PaymentStatus.paid if payment_result else PaymentStatus.canceled
         )
+
+        if PaymentStatus(new_payment_status) is PaymentStatus.paid:
+            updated_order = self.repository.update_order(
+                id,
+                payment_status=new_payment_status.value,
+                paid_at=datetime.now(),
+            )
+
         updated_order = self.repository.update_order(
             id, payment_status=new_payment_status.value
         )
+
         return updated_order
 
     def prepare_new_order(self, new_order_data: dict) -> Order:
