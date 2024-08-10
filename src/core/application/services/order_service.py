@@ -56,3 +56,11 @@ class OrderService:
             id, payment_status=new_payment_status.value
         )
         return updated_order
+
+    def prepare_new_order(self, new_order_data: dict) -> Order:
+        new_order = Order(
+            **new_order_data,
+            status="pending",
+            payment_status="pending",
+        )
+        return new_order

@@ -81,11 +81,7 @@ async def register(
 ):
     repository = OrderMongoRepository()
     service = OrderService(repository)
-    order = Order(
-        **create_order_request.model_dump(),
-        status="pending",
-        payment_status="pending",
-    )
+    order = service.prepare_new_order(create_order_request.model_dump())
     try:
         created_order = service.register_order(order)
     except Exception:
