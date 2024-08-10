@@ -36,13 +36,11 @@ async def list_orders(
     page: int = Query(default=1, gt=0),
     page_size: int = Query(default=10, gt=0, le=100),
 ) -> ListOrderV1Response:
-    order_repository = OrderMongoRepository()
-    order_service = OrderService(repository=order_repository)
+    repository = OrderMongoRepository()
+    service = OrderService(repository)
 
-    orders = order_service.list_orders(
-        filter={}, page=page, page_size=page_size
-    )
-    total_orders = order_service.count_orders(filter={})
+    orders = service.list_orders(filter={}, page=page, page_size=page_size)
+    total_orders = service.count_orders(filter={})
 
     pagination_info = get_pagination_info(
         total_results=total_orders, page=page, page_size=page_size
@@ -62,9 +60,9 @@ async def list_orders(
 
 @router.get("/{id}", response_model=OrderV1Response)
 async def get_user_by_id(id: str, response: Response) -> OrderV1Response:
-    order_repository = OrderMongoRepository()
-    order_service = OrderService(repository=order_repository)
-    order = order_service.get_order_by_id(id)
+    repository = OrderMongoRepository()
+    service = OrderService(repository)
+    order = service.get_order_by_id(id)
 
     if order is None:
         raise NoDocumentsFoundHTTPException()
@@ -120,6 +118,7 @@ async def delete(id: str, response: Response) -> DeleteDocumentV1Response:
     response.headers[HEADER_CONTENT_TYPE] = (
         HEADER_CONTENT_TYPE_APPLICATION_JSON
     )
+
 
 @router.patch("/fake-checkout/{order_id}")
 async def set_payment_status(
