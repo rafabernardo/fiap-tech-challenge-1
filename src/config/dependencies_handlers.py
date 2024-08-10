@@ -2,9 +2,11 @@ from adapters.driven.repositories.order_repository import OrderMongoRepository
 from adapters.driven.repositories.product_repository import (
     ProductMongoRepository,
 )
+from adapters.driven.repositories.queue_repository import QueueMongoRepository
 from adapters.driven.repositories.user_repository import UserMongoRepository
 from core.application.services.order_service import OrderService
 from core.application.services.product_service import ProductService
+from core.application.services.queue_service import QueueService
 from core.application.services.user_service import UserService
 
 
@@ -24,3 +26,9 @@ def get_user_service() -> UserService:
     user_repository = UserMongoRepository()
     user_service = UserService(user_repository)
     return user_service
+
+
+def get_queue_service() -> QueueService:
+    queue_repository = QueueMongoRepository()
+    queue_service = QueueService(queue_repository)
+    return queue_service
