@@ -11,11 +11,12 @@ def replace_id_key(document: dict):
     return data
 
 
-def prepare_document_to_db(document: dict):
+def prepare_document_to_db(document: dict, pop_id: bool = True):
     data = copy.deepcopy(document)
     now = datetime.now()
 
-    data.pop("id", None)
+    if pop_id:
+        data.pop("id", None)
     data["updated_at"] = now
     if data.get("created_at") is None:
         data["created_at"] = now
