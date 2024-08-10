@@ -5,7 +5,14 @@ from core.application.exceptions.commons_exceptions import (
     NoDocumentsFoundException,
 )
 from core.application.services.order_number_service import OrderNumberService
-from core.domain.models.order import Order, OrderFilter, PaymentStatus
+from core.application.services.utils import get_seconds_diff
+from core.domain.models.order import (
+    Order,
+    OrderFilter,
+    OrderOutput,
+    PaymentStatus,
+    Status,
+)
 from core.domain.ports.repositories.order import OrderRepositoryInterface
 
 order_number_service = OrderNumberService()
@@ -26,11 +33,16 @@ class OrderService:
 
     def list_orders(
         self, order_filter: OrderFilter, page: int, page_size: int
-    ) -> list[Order]:
+    ) -> list[OrderOutput]:
         paginated_orders = self.repository.list_orders(
             order_filter=order_filter, page=page, page_size=page_size
         )
-        return paginated_orders
+
+        listed_orders = [
+            prepare_order_to_list(order) for order in paginated_orders
+        ]
+
+        return listed_orders
 
     def count_orders(self, order_filter: OrderFilter) -> int:
         total_orders = self.repository.count_orders(order_filter=order_filter)
@@ -60,6 +72,7 @@ class OrderService:
                 id,
                 payment_status=new_payment_status.value,
                 paid_at=datetime.now(),
+                status="confirmed",
             )
 
         updated_order = self.repository.update_order(
@@ -75,3 +88,20 @@ class OrderService:
             payment_status="pending",
         )
         return new_order
+
+    from datetime import datetime
+
+
+def is_order_being_prepared(status: Status) -> bool:
+    return (
+        Status(status) is Status.confirmed
+        or Status(status) is Status.being_prepared
+        or Status(status) is Status.received
+    )
+
+
+def prepare_order_to_list(order: Order) -> OrderOutput:
+    if is_order_being_prepared(order.status):
+        order_response = OrderOutput(**order.model_dump())
+        order_response.waiting_time = get_seconds_diff(order.paid_at)
+    return order_response
