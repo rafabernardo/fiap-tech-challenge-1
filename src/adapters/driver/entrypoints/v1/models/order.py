@@ -1,8 +1,9 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from adapters.driver.entrypoints.v1.models.page import PageV1Response
+from adapters.driver.entrypoints.v1.models.user import UserV1Response
 
 
 class OrderItem(BaseModel):
@@ -18,7 +19,7 @@ class RegisterOrderV1Request(BaseModel):
 
 class OrderV1Response(BaseModel):
     id: str | None = None
-    owner_id: str | None = None
+    owner: UserV1Response | None = None
 
     order_number: int | None = None
     status: str
@@ -27,6 +28,8 @@ class OrderV1Response(BaseModel):
 
     created_at: datetime | None = None
     updated_at: datetime | None = None
+
+    model_config = ConfigDict(extra="ignore")
 
 
 class RegisterOrderV1Response(OrderV1Response): ...
