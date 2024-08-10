@@ -36,3 +36,9 @@ class ProductService:
             raise NoDocumentsFoundException()
 
         return self.repository.delete_product(id)
+
+    def update_product(self, id: str, **kwargs) -> Product:
+        product = self.repository._exists_by_id(id)
+        if not product:
+            raise NoDocumentsFoundException()
+        return self.repository.update_product(id, **kwargs)
