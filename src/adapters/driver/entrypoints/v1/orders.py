@@ -5,7 +5,6 @@ from adapters.driven.repositories.product_repository import (
     ProductMongoRepository,
 )
 from adapters.driven.repositories.queue_repository import QueueMongoRepository
-from adapters.driven.repositories.user_repository import UserMongoRepository
 from adapters.driven.repositories.utils import get_pagination_info
 from adapters.driver.entrypoints.v1.exceptions.commons import (
     ConflictErrorHTTPException,
@@ -17,6 +16,7 @@ from adapters.driver.entrypoints.v1.models.commons import (
 )
 from adapters.driver.entrypoints.v1.models.order import (
     ListOrderV1Response,
+    OrderItemV1Response,
     OrderV1Response,
     PatchPaymentResultV1Request,
     RegisterOrderV1Request,
@@ -166,18 +166,27 @@ async def register(
                     f"No User found with id '{create_order_request.owner_id}'"
                 )
                 raise NoDocumentsFoundException(message)
-
+        products_data = []
         for product in create_order_request.products:
             found_product = product_service.get_product_by_id(
                 product.product_id
             )
+            price = product.quantity * found_product.price
+            products_data.append(
+                OrderItemV1Response(
+                    product=found_product.model_dump(),
+                    quantity=product.quantity,
+                    price=price,
+                ).model_dump()
+            )
+
             if found_product is None:
                 message = f"No Product found with id '{product.product_id}'"
                 raise NoDocumentsFoundException(message)
-
         order = order_service.prepare_new_order(
-            create_order_request.model_dump()
+            create_order_request.model_dump(), products_data
         )
+
         created_order = order_service.register_order(order)
     except NoDocumentsFoundException as exc:
         raise NoDocumentsFoundHTTPException(exc.message)
