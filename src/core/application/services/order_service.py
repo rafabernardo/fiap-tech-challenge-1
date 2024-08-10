@@ -101,7 +101,7 @@ def is_order_being_prepared(status: Status) -> bool:
 
 
 def prepare_order_to_list(order: Order) -> OrderOutput:
+    order_response = OrderOutput(**order.model_dump())
     if is_order_being_prepared(order.status):
-        order_response = OrderOutput(**order.model_dump())
         order_response.waiting_time = get_seconds_diff(order.paid_at)
     return order_response
