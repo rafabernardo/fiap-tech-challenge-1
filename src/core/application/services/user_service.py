@@ -41,6 +41,10 @@ class UserService:
         clean_cpf = clean_cpf_to_db(cpf)
         return self.repository.get_by_cpf(clean_cpf)
 
+    def get_user_by_id(self, id: str) -> User | None:
+        user = self.repository.get_by_id(id)
+        return user
+
     def delete_user(self, id: str) -> bool:
         user_exists = self.repository.exists_by_id(id)
         if not user_exists:
