@@ -4,6 +4,7 @@ from adapters.driven.repositories.order_repository import OrderMongoRepository
 from adapters.driven.repositories.product_repository import (
     ProductMongoRepository,
 )
+from adapters.driven.repositories.queue_repository import QueueMongoRepository
 from adapters.driven.repositories.user_repository import UserMongoRepository
 from adapters.driven.repositories.utils import get_pagination_info
 from adapters.driver.entrypoints.v1.exceptions.commons import (
@@ -21,19 +22,57 @@ from adapters.driver.entrypoints.v1.models.order import (
     RegisterOrderV1Request,
     RegisterOrderV1Response,
 )
+from adapters.driver.entrypoints.v1.models.queue import (
+    ListQueueV1Response,
+    QueueItemV1Response,
+)
 from core.application.exceptions.commons_exceptions import (
     DataConflictException,
     NoDocumentsFoundException,
 )
 from core.application.services.order_service import OrderService
 from core.application.services.product_service import ProductService
+from core.application.services.queue_service import QueueService
 from core.application.services.user_service import UserService
-from core.domain.models.order import Order
+from core.domain.models.queue import QueueItem
 
 HEADER_CONTENT_TYPE = "content-type"
 HEADER_CONTENT_TYPE_APPLICATION_JSON = "application/json"
 
 router = APIRouter(prefix="/order")
+
+
+@router.get("/queue", response_model=ListQueueV1Response)
+async def list_queue_items(
+    response: Response,
+    page: int = Query(default=1, gt=0),
+    page_size: int = Query(default=10, gt=0, le=100),
+) -> ListQueueV1Response:
+    queue_repository = QueueMongoRepository()
+    queue_service = QueueService(queue_repository)
+
+    queue_items = queue_service.list_queue_items(
+        filter={}, page=page, page_size=page_size
+    )
+    total_queue_items = queue_service.count_queue_items(filter={})
+
+    pagination_info = get_pagination_info(
+        total_results=total_queue_items, page=page, page_size=page_size
+    )
+    listed_queue_items = [
+        QueueItemV1Response(**queue_item.model_dump())
+        for queue_item in queue_items
+    ]
+
+    paginated_queue_items = ListQueueV1Response(
+        **pagination_info.model_dump(), results=listed_queue_items
+    )
+
+    response.status_code = status.HTTP_200_OK
+    response.headers[HEADER_CONTENT_TYPE] = (
+        HEADER_CONTENT_TYPE_APPLICATION_JSON
+    )
+    return paginated_queue_items
 
 
 @router.get("", response_model=ListOrderV1Response)
@@ -155,9 +194,12 @@ async def set_payment_status(
 ):
     repository = OrderMongoRepository()
     service = OrderService(repository)
+    queue_repository = QueueMongoRepository()
+    queue_service = QueueService(queue_repository)
 
     try:
         service.set_payment_status(order_id, payment_result.result)
+        queue_service.register_queue_item(QueueItem(id=order_id))
     except NoDocumentsFoundException:
         raise NoDocumentsFoundHTTPException()
     except DataConflictException:
