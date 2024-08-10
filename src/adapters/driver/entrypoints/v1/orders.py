@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Query, Response, status
 
 from adapters.driven.repositories.order_repository import OrderMongoRepository
+from adapters.driven.repositories.product_repository import (
+    ProductMongoRepository,
+)
+from adapters.driven.repositories.user_repository import UserMongoRepository
 from adapters.driven.repositories.utils import get_pagination_info
 from adapters.driver.entrypoints.v1.exceptions.commons import (
     ConflictErrorHTTPException,
@@ -22,6 +26,8 @@ from core.application.exceptions.commons_exceptions import (
     NoDocumentsFoundException,
 )
 from core.application.services.order_service import OrderService
+from core.application.services.product_service import ProductService
+from core.application.services.user_service import UserService
 from core.domain.models.order import Order
 
 HEADER_CONTENT_TYPE = "content-type"
@@ -80,10 +86,35 @@ async def register(
     response: Response,
 ):
     repository = OrderMongoRepository()
-    service = OrderService(repository)
-    order = service.prepare_new_order(create_order_request.model_dump())
+    user_repository = UserMongoRepository()
+    product_repository = ProductMongoRepository()
+    order_service = OrderService(repository)
+    user_service = UserService(user_repository)
+    product_service = ProductService(product_repository)
+
     try:
-        created_order = service.register_order(order)
+        if create_order_request.owner_id:
+            user = user_service.get_user_by_id(create_order_request.owner_id)
+            if user is None:
+                message = (
+                    f"No User found with id '{create_order_request.owner_id}'"
+                )
+                raise NoDocumentsFoundException(message)
+
+        for product in create_order_request.products:
+            found_product = product_service.get_product_by_id(
+                product.product_id
+            )
+            if found_product is None:
+                message = f"No Product found with id '{product.product_id}'"
+                raise NoDocumentsFoundException(message)
+
+        order = order_service.prepare_new_order(
+            create_order_request.model_dump()
+        )
+        created_order = order_service.register_order(order)
+    except NoDocumentsFoundException as exc:
+        raise NoDocumentsFoundHTTPException(exc.message)
     except Exception:
         raise InternalServerErrorHTTPException()
 
