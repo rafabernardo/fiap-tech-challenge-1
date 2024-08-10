@@ -10,6 +10,7 @@ from adapters.driver.entrypoints.v1.exceptions.commons import (
 )
 from adapters.driver.entrypoints.v1.models.product import (
     ListProductV1Response,
+    ProductPatchV1Request,
     ProductV1Request,
     ProductV1Response,
 )
@@ -137,6 +138,31 @@ async def delete(
     )
 
 
-@router.patch("/{id}")
-async def update(id: int):
-    return {"msg": id}
+@router.patch("/{id}", response_model=ProductV1Response)
+async def update(
+    id: str,
+    product_request: ProductPatchV1Request,
+    response: Response,
+):
+    product_repository = ProductMongoRepository()
+    service = ProductService(product_repository)
+
+    try:
+
+        cleaned_product_request = {
+            k: v
+            for k, v in product_request.model_dump().items()
+            if v is not None
+        }
+        product = service.update_product(id, **cleaned_product_request)
+
+        response.status_code = status.HTTP_200_OK
+        response.headers[HEADER_CONTENT_TYPE] = (
+            HEADER_CONTENT_TYPE_APPLICATION_JSON
+        )
+
+        return product
+    except NoDocumentsFoundException:
+        raise NoDocumentsFoundHTTPException()
+    except Exception:
+        raise InternalServerErrorHTTPException()

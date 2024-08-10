@@ -23,6 +23,14 @@ class ProductV1Request(BaseModel):
             raise ValueError(f"Invalid category value: {v}")
 
 
+class ProductPatchV1Request(ProductV1Request):
+    name: str | None = None
+    category: str | None = None
+    price: int | None = None
+    description: str | None = None
+    image: str | None = None
+
+
 class ProductV1Response(ProductV1Request):
     id: str
     created_at: datetime
