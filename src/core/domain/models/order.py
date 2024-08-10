@@ -12,7 +12,9 @@ class Status(Enum):
     received = "received"
     being_prepared = "being_prepared"
     finished = "finished"
+    # Only for orders that were not collected from client
     returned = "returned"
+
     canceled = "canceled"
 
 
@@ -60,3 +62,7 @@ class Order(BaseModel):
 
 class OrderFilter(BaseModel):
     status: list[str] | None = None
+
+
+class OrderOutput(Order):
+    waiting_time: float | None = None
