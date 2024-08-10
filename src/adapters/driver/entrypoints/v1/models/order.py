@@ -27,6 +27,7 @@ class OrderV1Response(BaseModel):
 
     created_at: datetime | None = None
     updated_at: datetime | None = None
+    waiting_time: float | None = None
 
 
 class RegisterOrderV1Response(OrderV1Response): ...
