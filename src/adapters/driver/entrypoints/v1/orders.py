@@ -65,7 +65,7 @@ async def list_orders(
 
 
 @router.get("/{id}", response_model=OrderV1Response)
-async def get_user_by_id(id: str, response: Response) -> OrderV1Response:
+async def get_order_by_id(id: str, response: Response) -> OrderV1Response:
     repository = OrderMongoRepository()
     service = OrderService(repository)
     order = service.get_order_by_id(id)
