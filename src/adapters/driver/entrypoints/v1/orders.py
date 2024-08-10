@@ -202,12 +202,14 @@ async def register(
 
 
 @router.delete("/{id}", response_model=DeleteDocumentV1Response)
-async def delete(id: str, response: Response) -> DeleteDocumentV1Response:
-    repository = OrderMongoRepository()
-    service = OrderService(repository)
+async def delete(
+    id: str,
+    response: Response,
+    order_service: OrderService = Depends(get_order_service),
+) -> DeleteDocumentV1Response:
 
     try:
-        was_order_deleted = service.delete_order(id)
+        was_order_deleted = order_service.delete_order(id)
     except NoDocumentsFoundException as exc:
         raise NoDocumentsFoundHTTPException(detail=exc.message)
     except Exception:
@@ -227,14 +229,13 @@ async def set_payment_status(
     order_id: str,
     payment_result: PatchPaymentResultV1Request,
     response: Response,
+    order_service: OrderService = Depends(get_order_service),
 ):
-    repository = OrderMongoRepository()
-    service = OrderService(repository)
     queue_repository = QueueMongoRepository()
     queue_service = QueueService(queue_repository)
 
     try:
-        service.set_payment_status(order_id, payment_result.result)
+        order_service.set_payment_status(order_id, payment_result.result)
         queue_service.register_queue_item(QueueItem(id=order_id))
     except NoDocumentsFoundException:
         raise NoDocumentsFoundHTTPException()
