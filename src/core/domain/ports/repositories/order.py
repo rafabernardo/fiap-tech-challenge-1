@@ -1,6 +1,6 @@
 import abc
 
-from core.domain.models.order import Order, OrderItem
+from core.domain.models.order import Order, OrderFilter, OrderItem
 
 
 class OrderRepositoryInterface(abc.ABC):
@@ -15,15 +15,15 @@ class OrderRepositoryInterface(abc.ABC):
         return order
 
     def list_orders(
-        self, filter: dict, page: int, page_size: int
+        self, order_filter: OrderFilter, page: int, page_size: int
     ) -> list[Order]:
         orders = self._list_orders(
-            filter=filter, page=page, page_size=page_size
+            order_filter=order_filter, page=page, page_size=page_size
         )
         return orders
 
-    def count_orders(self, filter: dict) -> int:
-        total_orders = self._count_orders(filter=filter)
+    def count_orders(self, order_filter: OrderFilter) -> int:
+        total_orders = self._count_orders(order_filter=order_filter)
         return total_orders
 
     def delete_order(self, id: str) -> bool:
@@ -54,12 +54,12 @@ class OrderRepositoryInterface(abc.ABC):
 
     @abc.abstractmethod
     def _list_orders(
-        self, filter: dict, page: int, page_size: int
+        self, filter: OrderFilter, page: int, page_size: int
     ) -> list[Order]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _count_orders(self, filter: dict) -> int:
+    def _count_orders(self, filter: OrderFilter) -> int:
         raise NotImplementedError
 
     @abc.abstractmethod

@@ -34,6 +34,7 @@ from core.application.services.order_service import OrderService
 from core.application.services.product_service import ProductService
 from core.application.services.queue_service import QueueService
 from core.application.services.user_service import UserService
+from core.domain.models.order import OrderFilter, Status
 from core.domain.models.queue import QueueItem
 
 HEADER_CONTENT_TYPE = "content-type"
@@ -78,14 +79,19 @@ async def list_queue_items(
 @router.get("", response_model=ListOrderV1Response)
 async def list_orders(
     response: Response,
+    order_status: list[Status] = Query(None),
     page: int = Query(default=1, gt=0),
     page_size: int = Query(default=10, gt=0, le=100),
 ) -> ListOrderV1Response:
     repository = OrderMongoRepository()
     service = OrderService(repository)
 
-    orders = service.list_orders(filter={}, page=page, page_size=page_size)
-    total_orders = service.count_orders(filter={})
+    orders_filter = OrderFilter(status=order_status)
+
+    orders = service.list_orders(
+        order_filter=orders_filter, page=page, page_size=page_size
+    )
+    total_orders = service.count_orders(order_filter=orders_filter)
 
     pagination_info = get_pagination_info(
         total_results=total_orders, page=page, page_size=page_size

@@ -55,3 +55,7 @@ class Order(BaseModel):
             return v
         except ValueError:
             raise ValueError(f"Invalid status value: {v}")
+
+
+class OrderFilter(BaseModel):
+    status: list[str] | None = None

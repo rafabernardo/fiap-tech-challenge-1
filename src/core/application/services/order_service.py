@@ -3,7 +3,7 @@ from core.application.exceptions.commons_exceptions import (
     NoDocumentsFoundException,
 )
 from core.application.services.order_number_service import OrderNumberService
-from core.domain.models.order import Order, PaymentStatus
+from core.domain.models.order import Order, OrderFilter, PaymentStatus
 from core.domain.ports.repositories.order import OrderRepositoryInterface
 
 order_number_service = OrderNumberService()
@@ -23,15 +23,15 @@ class OrderService:
         return order
 
     def list_orders(
-        self, filter: dict, page: int, page_size: int
+        self, order_filter: OrderFilter, page: int, page_size: int
     ) -> list[Order]:
         paginated_orders = self.repository.list_orders(
-            filter=filter, page=page, page_size=page_size
+            order_filter=order_filter, page=page, page_size=page_size
         )
         return paginated_orders
 
-    def count_orders(self, filter: dict) -> int:
-        total_orders = self.repository.count_orders(filter=filter)
+    def count_orders(self, order_filter: OrderFilter) -> int:
+        total_orders = self.repository.count_orders(order_filter=order_filter)
         return total_orders
 
     def delete_order(self, id: str) -> bool:
