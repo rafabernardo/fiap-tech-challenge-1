@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Response, status
+from fastapi import APIRouter, Depends, Query, Response, status
 
 from adapters.driven.repositories.order_repository import OrderMongoRepository
 from adapters.driven.repositories.product_repository import (
@@ -25,6 +25,11 @@ from adapters.driver.entrypoints.v1.models.order import (
 from adapters.driver.entrypoints.v1.models.queue import (
     ListQueueV1Response,
     QueueItemV1Response,
+)
+from config.dependencies_handlers import (
+    get_order_service,
+    get_product_service,
+    get_user_service,
 )
 from core.application.exceptions.commons_exceptions import (
     DataConflictException,
@@ -82,21 +87,31 @@ async def list_orders(
     order_status: list[Status] = Query(None),
     page: int = Query(default=1, gt=0),
     page_size: int = Query(default=10, gt=0, le=100),
+    order_service: OrderService = Depends(get_order_service),
+    user_service: UserService = Depends(get_user_service),
 ) -> ListOrderV1Response:
-    repository = OrderMongoRepository()
-    service = OrderService(repository)
 
     orders_filter = OrderFilter(status=order_status)
 
-    orders = service.list_orders(
+    orders = order_service.list_orders(
         order_filter=orders_filter, page=page, page_size=page_size
     )
-    total_orders = service.count_orders(order_filter=orders_filter)
+    total_orders = order_service.count_orders(order_filter=orders_filter)
 
     pagination_info = get_pagination_info(
         total_results=total_orders, page=page, page_size=page_size
     )
-    listed_orders = [OrderV1Response(**order.model_dump()) for order in orders]
+    listed_orders = []
+    for order in orders:
+        owner_data = (
+            user_service.get_user_by_id(order.owner_id).model_dump()
+            if order.owner_id
+            else None
+        )
+        order_response = OrderV1Response(
+            **order.model_dump(), owner=owner_data
+        )
+        listed_orders.append(order_response)
 
     paginated_orders = ListOrderV1Response(
         **pagination_info.model_dump(), results=listed_orders
@@ -110,33 +125,39 @@ async def list_orders(
 
 
 @router.get("/{id}", response_model=OrderV1Response)
-async def get_order_by_id(id: str, response: Response) -> OrderV1Response:
-    repository = OrderMongoRepository()
-    service = OrderService(repository)
-    order = service.get_order_by_id(id)
+async def get_order_by_id(
+    id: str,
+    response: Response,
+    order_service: OrderService = Depends(get_order_service),
+    user_service: UserService = Depends(get_user_service),
+) -> OrderV1Response:
 
+    order = order_service.get_order_by_id(id)
     if order is None:
         raise NoDocumentsFoundHTTPException()
+
+    owner_data = (
+        user_service.get_user_by_id(order.owner_id).model_dump()
+        if order.owner_id
+        else None
+    )
+    order_response = OrderV1Response(**order.model_dump(), owner=owner_data)
 
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
         HEADER_CONTENT_TYPE_APPLICATION_JSON
     )
-    return order
+    return order_response
 
 
 @router.post("", response_model=RegisterOrderV1Response)
 async def register(
     create_order_request: RegisterOrderV1Request,
     response: Response,
+    order_service: OrderService = Depends(get_order_service),
+    user_service: UserService = Depends(get_user_service),
+    product_service: ProductService = Depends(get_product_service),
 ):
-    repository = OrderMongoRepository()
-    user_repository = UserMongoRepository()
-    product_repository = ProductMongoRepository()
-    order_service = OrderService(repository)
-    user_service = UserService(user_repository)
-    product_service = ProductService(product_repository)
-
     try:
         if create_order_request.owner_id:
             user = user_service.get_user_by_id(create_order_request.owner_id)
