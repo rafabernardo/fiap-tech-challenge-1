@@ -22,6 +22,10 @@ class ProductService:
         )
         return paginated_orders
 
+    def get_product_by_id(self, id: str) -> Product | None:
+        product = self.repository.get_by_id(id)
+        return product
+
     def count_products(self, filter: dict) -> int:
         total_products = self.repository.count_products(filter=filter)
         return total_products

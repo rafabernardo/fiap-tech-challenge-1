@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from adapters.driver.entrypoints.v1.models.page import PageV1Response
 
@@ -22,7 +22,7 @@ class OrderV1Response(BaseModel):
 
     order_number: int | None = None
     status: str
-    products: list[OrderItem]
+    products: list[OrderItem] = Field(..., min_length=1)
     payment_status: str
 
     created_at: datetime | None = None

@@ -11,7 +11,7 @@ class UserRepositoryInterface(abc.ABC):
         user = self._add(user)
         return user
 
-    def get_by_id(self, id: str) -> User:
+    def get_by_id(self, id: str) -> User | None:
         user = self._get_by_id(id)
         return user
 
@@ -41,7 +41,7 @@ class UserRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _get_by_id(self, id: str) -> User:
+    def _get_by_id(self, id: str) -> User | None:
         raise NotImplementedError
 
     @abc.abstractmethod
