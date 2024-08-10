@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RegisterUserV1Request(BaseModel):
@@ -13,9 +13,10 @@ class UserV1Response(BaseModel):
     id: str
     name: str
     email: str
-    cpf: str | None = None
     created_at: datetime
     updated_at: datetime
+
+    model_config = ConfigDict(extra="ignore")
 
 
 class IdentifyUserV1Request(BaseModel):
