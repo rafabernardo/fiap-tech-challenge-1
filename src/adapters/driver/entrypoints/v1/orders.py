@@ -29,6 +29,7 @@ from adapters.driver.entrypoints.v1.models.queue import (
 from config.dependencies_handlers import (
     get_order_service,
     get_product_service,
+    get_queue_service,
     get_user_service,
 )
 from core.application.exceptions.commons_exceptions import (
@@ -53,9 +54,8 @@ async def list_queue_items(
     response: Response,
     page: int = Query(default=1, gt=0),
     page_size: int = Query(default=10, gt=0, le=100),
+    queue_service: QueueService = Depends(get_queue_service),
 ) -> ListQueueV1Response:
-    queue_repository = QueueMongoRepository()
-    queue_service = QueueService(queue_repository)
 
     queue_items = queue_service.list_queue_items(
         filter={}, page=page, page_size=page_size
@@ -230,9 +230,8 @@ async def set_payment_status(
     payment_result: PatchPaymentResultV1Request,
     response: Response,
     order_service: OrderService = Depends(get_order_service),
+    queue_service: QueueService = Depends(get_queue_service),
 ):
-    queue_repository = QueueMongoRepository()
-    queue_service = QueueService(queue_repository)
 
     try:
         order_service.set_payment_status(order_id, payment_result.result)
