@@ -33,6 +33,10 @@ class ProductsRepositoryInterface(abc.ABC):
     def exists_by_id(self, id: str) -> bool:
         return self._exists_by_id(id)
 
+    def update_product(self, id: str, **kwargs) -> Product:
+        product = self._update_product(id, **kwargs)
+        return product
+
     @abc.abstractmethod
     def _add(self, product: Product) -> Product:
         raise NotImplementedError
@@ -57,4 +61,8 @@ class ProductsRepositoryInterface(abc.ABC):
 
     @abc.abstractmethod
     def _exists_by_id(self, id: str) -> bool:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _update_product(self, id: str, **kwargs) -> Product:
         raise NotImplementedError

@@ -52,6 +52,21 @@ class ProductMongoRepository(ProductsRepositoryInterface):
         was_user_deleted = result.deleted_count > 0
         return was_user_deleted
 
+    def _update_product(self, id: str, **kwargs) -> Product:
+        id_filter = self.get_product_by_id_query(id=id)
+        product_to_update = prepare_document_to_db(
+            kwargs, skip_created_at=True
+        )
+        query = self.get_product_update_data(product_to_update)
+        updated_product = self.collection.find_one_and_update(
+            id_filter,
+            query,
+            return_document=True,
+        )
+
+        final_product = replace_id_key(updated_product)
+        return final_product
+
     @staticmethod
     def get_product_by_id_query(id: str) -> dict:
         query = {"_id": ObjectId(id)}
@@ -61,3 +76,8 @@ class ProductMongoRepository(ProductsRepositoryInterface):
     def get_list_product_query() -> dict:
         query = {}
         return query
+
+    @staticmethod
+    def get_product_update_data(kwargs: dict) -> dict:
+        update_data = {"$set": kwargs}
+        return update_data
