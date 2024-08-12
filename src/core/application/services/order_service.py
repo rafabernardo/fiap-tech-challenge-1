@@ -5,7 +5,13 @@ from core.application.exceptions.commons_exceptions import (
     NoDocumentsFoundException,
 )
 from core.application.services.order_number_service import OrderNumberService
-from core.domain.models.order import Order, OrderFilter, PaymentStatus
+from core.application.services.product_service import ProductService
+from core.domain.models.order import (
+    Order,
+    OrderFilter,
+    OrderItem,
+    PaymentStatus,
+)
 from core.domain.ports.repositories.order import OrderRepositoryInterface
 
 order_number_service = OrderNumberService()
@@ -82,3 +88,29 @@ class OrderService:
         )
         new_order = Order(**order_data_copy)
         return new_order
+
+    def update_order(self, id: str, **kwargs) -> Order:
+        order = self.repository.exists_by_id(id)
+        if not order:
+            raise NoDocumentsFoundException()
+        updated_order = self.repository.update_order(id, **kwargs)
+        return updated_order
+
+    def get_order_items_details(
+        self, order_items: list[dict], product_service: ProductService
+    ) -> list[OrderItem]:
+        products_data = []
+        for product in order_items:
+            product_id = product.get("product_id")
+            quantity = product.get("quantity")
+
+            found_product = product_service.get_product_by_id(product_id)
+            price = quantity * found_product.price
+            products_data.append(
+                OrderItem(
+                    product=found_product.model_dump(),
+                    quantity=quantity,
+                    price=price,
+                ).model_dump()
+            )
+        return products_data
