@@ -41,3 +41,9 @@ def get_pagination_info(
         has_previous=has_previous,
     )
     return pagination_info
+
+
+def clean_up_dict(data: dict) -> dict:
+    data_copy = copy.deepcopy(data)
+    cleaned_data = {k: v for k, v in data_copy.items() if v is not None}
+    return cleaned_data
