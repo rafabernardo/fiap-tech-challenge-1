@@ -34,6 +34,10 @@ class OrderMongoRepository(OrderRepositoryInterface):
         order = replace_id_key(order)
         return Order(**order)
 
+    def _exists_by_id(self, id: str) -> bool:
+        query = self.get_order_by_id_query(id=id)
+        return self.collection.count_documents(query) > 0
+
     def _list_orders(self) -> list[Order] | None:
         query = self.get_list_orders_query()
         orders = list(self.collection.find(query))
