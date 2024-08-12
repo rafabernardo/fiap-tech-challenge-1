@@ -1,3 +1,5 @@
+import copy
+
 from core.application.exceptions.commons_exceptions import (
     DataConflictException,
     NoDocumentsFoundException,
@@ -58,8 +60,9 @@ class OrderService:
         return updated_order
 
     def prepare_new_order(
-        self, new_order_data: dict, products_data: list[dict]
+        self, order_data: dict, products_data: list[dict]
     ) -> Order:
+        order_data_copy = copy.deepcopy(order_data)
         total_price = sum(
             [
                 product_data.get("price")
@@ -67,15 +70,15 @@ class OrderService:
                 if isinstance(product_data.get("price"), int)
             ]
         )
-        new_order_data.update(
+        order_data_copy.update(
             {
                 "products": products_data,
                 "total_price": total_price,
+                "status": order_data_copy.get("status", "pending"),
+                "payment_status": order_data_copy.get(
+                    "payment_status", "pending"
+                ),
             }
         )
-        new_order = Order(
-            **new_order_data,
-            status="pending",
-            payment_status="pending",
-        )
+        new_order = Order(**order_data_copy)
         return new_order
