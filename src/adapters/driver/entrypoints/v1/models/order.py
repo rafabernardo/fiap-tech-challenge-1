@@ -48,3 +48,9 @@ class ListOrderV1Response(PageV1Response):
 
 class PatchPaymentResultV1Request(BaseModel):
     result: bool
+
+
+class OrderPatchV1Request(BaseModel):
+    products: list[OrderItemV1Request] | None = Field(None, min_length=1)
+    status: str | None = None
+    payment_status: str | None = None

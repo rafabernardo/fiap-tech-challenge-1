@@ -1,15 +1,14 @@
 from fastapi import APIRouter, Depends, Query, Response, status
 
-from adapters.driven.repositories.order_repository import OrderMongoRepository
-from adapters.driven.repositories.product_repository import (
-    ProductMongoRepository,
+from adapters.driven.repositories.utils import (
+    clean_up_dict,
+    get_pagination_info,
 )
-from adapters.driven.repositories.queue_repository import QueueMongoRepository
-from adapters.driven.repositories.utils import get_pagination_info
 from adapters.driver.entrypoints.v1.exceptions.commons import (
     ConflictErrorHTTPException,
     InternalServerErrorHTTPException,
     NoDocumentsFoundHTTPException,
+    UnprocessableEntityErrorHTTPException,
 )
 from adapters.driver.entrypoints.v1.models.commons import (
     DeleteDocumentV1Response,
@@ -17,6 +16,7 @@ from adapters.driver.entrypoints.v1.models.commons import (
 from adapters.driver.entrypoints.v1.models.order import (
     ListOrderV1Response,
     OrderItemV1Response,
+    OrderPatchV1Request,
     OrderV1Response,
     PatchPaymentResultV1Request,
     RegisterOrderV1Request,
@@ -222,6 +222,55 @@ async def delete(
     response.headers[HEADER_CONTENT_TYPE] = (
         HEADER_CONTENT_TYPE_APPLICATION_JSON
     )
+
+
+@router.patch("/{id}", response_model=OrderV1Response)
+async def update(
+    id: str,
+    order_request: OrderPatchV1Request,
+    response: Response,
+    order_service: OrderService = Depends(get_order_service),
+    product_service: ProductService = Depends(get_product_service),
+) -> OrderV1Response:
+    try:
+        old_order = order_service.get_order_by_id(id)
+        if old_order is None:
+            raise NoDocumentsFoundException()
+        cleaned_order_request = clean_up_dict(order_request.model_dump())
+        new_order_items_data = cleaned_order_request.get("products")
+        old_order_data = old_order.model_dump()
+        old_order_items_data = old_order_data.get("products")
+        if new_order_items_data:
+            new_order_items_details = order_service.get_order_items_details(
+                new_order_items_data, product_service
+            )
+            if new_order_items_details == old_order_items_data:
+                cleaned_order_request.pop("products", None)
+            else:
+                prepared_order = order_service.prepare_new_order(
+                    old_order_data, new_order_items_details
+                )
+                cleaned_order_request.update(
+                    {
+                        "products": new_order_items_details,
+                        "total_price": prepared_order.total_price,
+                    }
+                )
+
+        response.status_code = status.HTTP_200_OK
+        response.headers[HEADER_CONTENT_TYPE] = (
+            HEADER_CONTENT_TYPE_APPLICATION_JSON
+        )
+        if not cleaned_order_request:
+            return old_order
+
+        order = order_service.update_order(id, **cleaned_order_request)
+        updated_order = OrderV1Response(**order.model_dump())
+        return updated_order
+    except NoDocumentsFoundException:
+        raise NoDocumentsFoundHTTPException()
+    except Exception:
+        raise InternalServerErrorHTTPException()
 
 
 @router.patch("/fake-checkout/{order_id}")
