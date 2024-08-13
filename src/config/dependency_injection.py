@@ -14,7 +14,11 @@ from core.application.services.user_service import UserService
 
 class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
-        modules=["adapters.driver.entrypoints.v1.orders"]
+        modules=[
+            "adapters.driver.entrypoints.v1.orders",
+            "adapters.driver.entrypoints.v1.products",
+            "adapters.driver.entrypoints.v1.users",
+        ]
     )
     order_repository = providers.Factory(OrderMongoRepository)
     order_service = providers.Factory(OrderService, order_repository)
