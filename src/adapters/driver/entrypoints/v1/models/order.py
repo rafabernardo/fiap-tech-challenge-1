@@ -35,6 +35,7 @@ class OrderV1Response(BaseModel):
 
     created_at: datetime | None = None
     updated_at: datetime | None = None
+    waiting_time: float | None = None
 
     model_config = ConfigDict(extra="ignore")
 

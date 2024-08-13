@@ -43,10 +43,11 @@ class OrderMongoRepository(OrderRepositoryInterface):
 
     def _update_order(self, id, **kwargs) -> Order:
         id_query = self.get_order_by_id_query(id)
-        order_update_data = self.get_order_update_data(kwargs)
+        order_to_update = prepare_document_to_db(kwargs, skip_created_at=True)
+        query = self.get_order_update_data(order_to_update)
         updated_order = self.collection.find_one_and_update(
-            orders_filter=id_query,
-            update=order_update_data,
+            filter=id_query,
+            update=query,
             return_document=ReturnDocument.AFTER,
         )
         updated_order = replace_id_key(updated_order)
