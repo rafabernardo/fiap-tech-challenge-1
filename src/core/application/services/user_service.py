@@ -33,6 +33,10 @@ class UserService:
 
         return self.repository.add(user)
 
+    def list_users(self) -> list[User]:
+        paginated_orders = self.repository.list_users()
+        return paginated_orders
+
     def get_user_by_cpf(self, cpf: str) -> User:
         valid_cpf = validate_cpf(cpf)
         if not valid_cpf:
