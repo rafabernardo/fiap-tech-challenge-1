@@ -64,7 +64,8 @@ class UserMongoRepository(UserRepositoryInterface):
 
     def _update_user(self, id, **kwargs) -> User:
         id_query = self.get_user_by_id_query(id)
-        user_update_data = self.get_user_update_query(kwargs)
+        user_to_db = prepare_document_to_db(kwargs, skip_created_at=True)
+        user_update_data = self.get_user_update_query(user_to_db)
         updated_user = self.collection.find_one_and_update(
             filter=id_query,
             update=user_update_data,
