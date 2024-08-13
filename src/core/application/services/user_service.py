@@ -57,9 +57,12 @@ class UserService:
         return self.repository.delete_user(id)
 
     def identify_user(self, id: str, cpf: str) -> User:
-        user_exists = self.repository.exists_by_id(id)
-        if not user_exists:
+        user = self.repository.get_by_id(id)
+        if not user:
             raise NoDocumentsFoundException()
+
+        if user.cpf is not None:
+            raise UserAlreadyExistsError("User already has a CPF")
 
         valid_cpf = validate_cpf(cpf)
         if valid_cpf:
