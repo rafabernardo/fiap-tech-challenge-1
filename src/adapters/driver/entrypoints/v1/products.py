@@ -3,7 +3,10 @@ from fastapi import APIRouter, Query, Response, status
 from adapters.driven.repositories.product_repository import (
     ProductMongoRepository,
 )
-from adapters.driven.repositories.utils import get_pagination_info
+from adapters.driven.repositories.utils import (
+    clean_up_dict,
+    get_pagination_info,
+)
 from adapters.driver.entrypoints.v1.exceptions.commons import (
     InternalServerErrorHTTPException,
     NoDocumentsFoundHTTPException,
@@ -149,11 +152,7 @@ async def update(
 
     try:
 
-        cleaned_product_request = {
-            k: v
-            for k, v in product_request.model_dump().items()
-            if v is not None
-        }
+        cleaned_product_request = clean_up_dict(product_request.model_dump())
         product = service.update_product(id, **cleaned_product_request)
 
         response.status_code = status.HTTP_200_OK

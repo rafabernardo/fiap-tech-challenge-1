@@ -30,6 +30,9 @@ class OrderRepositoryInterface(abc.ABC):
         was_order_deleted = self._delete_order(id=id)
         return was_order_deleted
 
+    def exists_by_id(self, id: str) -> bool:
+        return self._exists_by_id(id)
+
     def update_order(self, id: str, **kwargs) -> Order:
         order = self._update_order(id, **kwargs)
         return order
@@ -68,6 +71,10 @@ class OrderRepositoryInterface(abc.ABC):
 
     @abc.abstractmethod
     def _update_order(self, id: str, **kwargs) -> Order:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _exists_by_id(self, id: str) -> bool:
         raise NotImplementedError
 
     @abc.abstractmethod

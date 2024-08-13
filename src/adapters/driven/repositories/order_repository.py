@@ -34,6 +34,10 @@ class OrderMongoRepository(OrderRepositoryInterface):
         order = replace_id_key(order)
         return Order(**order)
 
+    def _exists_by_id(self, id: str) -> bool:
+        query = self.get_order_by_id_query(id=id)
+        return self.collection.count_documents(query) > 0
+
     def _list_orders(self) -> list[Order] | None:
         query = self.get_list_orders_query()
         orders = list(self.collection.find(query))
@@ -44,10 +48,10 @@ class OrderMongoRepository(OrderRepositoryInterface):
     def _update_order(self, id, **kwargs) -> Order:
         id_query = self.get_order_by_id_query(id)
         order_to_update = prepare_document_to_db(kwargs, skip_created_at=True)
-        query = self.get_order_update_data(order_to_update)
+        order_update_data = self.get_order_update_data(order_to_update)
         updated_order = self.collection.find_one_and_update(
             filter=id_query,
-            update=query,
+            update=order_update_data,
             return_document=ReturnDocument.AFTER,
         )
         updated_order = replace_id_key(updated_order)
