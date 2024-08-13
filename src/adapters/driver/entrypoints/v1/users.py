@@ -174,5 +174,7 @@ async def identify_user(
         raise NoDocumentsFoundHTTPException()
     except UserInvalidFormatDataError as exc:
         raise UnprocessableEntityErrorHTTPException(exc.message)
+    except UserAlreadyExistsError as exc:
+        raise UnprocessableEntityErrorHTTPException(exc.message)
     except Exception:
         raise InternalServerErrorHTTPException()
