@@ -1,7 +1,6 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Response, status
 
-from adapters.driven.repositories.user_repository import UserMongoRepository
 from adapters.driver.entrypoints.v1.exceptions.commons import (
     InternalServerErrorHTTPException,
     NoDocumentsFoundHTTPException,
