@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Response, status
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends, Response, status
 
-from adapters.driven.repositories.user_repository import UserMongoRepository
 from adapters.driver.entrypoints.v1.exceptions.commons import (
     InternalServerErrorHTTPException,
     NoDocumentsFoundHTTPException,
@@ -11,6 +11,7 @@ from adapters.driver.entrypoints.v1.models.user import (
     RegisterUserV1Request,
     UserV1Response,
 )
+from config.dependency_injection import Container
 from core.application.exceptions.commons_exceptions import (
     NoDocumentsFoundException,
 )
@@ -28,13 +29,14 @@ router = APIRouter(prefix="/users")
 
 
 @router.get("", response_model=list[UserV1Response])
+@inject
 async def list_users(
     response: Response,
+    user_service: UserService = Depends(Provide[Container.user_service]),
 ):
 
-    user_repository = UserMongoRepository()
     try:
-        users = user_repository.list_users()
+        users = user_service.list_users()
     except Exception:
         raise InternalServerErrorHTTPException()
 
@@ -47,14 +49,14 @@ async def list_users(
 
 
 @router.get("/{id}", response_model=UserV1Response)
+@inject
 async def get_user_by_id(
     id: str,
     response: Response,
+    user_service: UserService = Depends(Provide[Container.user_service]),
 ):
-    user_repository = UserMongoRepository()
     try:
-        user = user_repository.get_by_id(id)
-
+        user = user_service.get_user_by_id(id)
     except Exception:
         raise InternalServerErrorHTTPException()
 
@@ -69,14 +71,15 @@ async def get_user_by_id(
 
 
 @router.get("/cpf/{cpf}", response_model=UserV1Response)
+@inject
 async def get_user_by_cpf(
     cpf: str,
     response: Response,
+    user_service: UserService = Depends(Provide[Container.user_service]),
 ):
-    user_repository = UserMongoRepository()
-    service = UserService(user_repository)
+
     try:
-        user = service.get_user_by_cpf(cpf)
+        user = user_service.get_user_by_cpf(cpf)
 
     except UserInvalidFormatDataError as exc:
         raise UnprocessableEntityErrorHTTPException(
@@ -97,15 +100,16 @@ async def get_user_by_cpf(
 
 
 @router.post("/register", response_model=UserV1Response)
+@inject
 async def register(
     create_user_request: RegisterUserV1Request,
     response: Response,
+    user_service: UserService = Depends(Provide[Container.user_service]),
 ):
-    user_repository = UserMongoRepository()
-    service = UserService(user_repository)
+
     user = User(**create_user_request.model_dump())
     try:
-        created_user = service.register_user(user)
+        created_user = user_service.register_user(user)
     except UserAlreadyExistsError as exc:
         raise NoDocumentsFoundHTTPException(detail=exc.message)
     except UserInvalidFormatDataError as exc:
@@ -122,15 +126,15 @@ async def register(
 
 
 @router.delete("/delete/{id}")
+@inject
 async def delete(
     id: str,
     response: Response,
+    user_service: UserService = Depends(Provide[Container.user_service]),
 ):
-    user_repository = UserMongoRepository()
-    service = UserService(user_repository)
 
     try:
-        was_user_deleted = service.delete_user(id)
+        was_user_deleted = user_service.delete_user(id)
 
         if was_user_deleted:
             response.status_code = status.HTTP_204_NO_CONTENT
@@ -145,17 +149,19 @@ async def delete(
 
 
 @router.patch("/identify/{id}", response_model=UserV1Response)
+@inject
 async def identify_user(
     id: str,
     identify_user_request: IdentifyUserV1Request,
     response: Response,
+    user_service: UserService = Depends(Provide[Container.user_service]),
 ):
-    user_repository = UserMongoRepository()
-    service = UserService(user_repository)
 
     try:
 
-        updated_user = service.identify_user(id, identify_user_request.cpf)
+        updated_user = user_service.identify_user(
+            id, identify_user_request.cpf
+        )
 
         response.status_code = status.HTTP_200_OK
         response.headers[HEADER_CONTENT_TYPE] = (

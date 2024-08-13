@@ -1,8 +1,6 @@
-from fastapi import APIRouter, Query, Response, status
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends, Query, Response, status
 
-from adapters.driven.repositories.product_repository import (
-    ProductMongoRepository,
-)
 from adapters.driven.repositories.utils import (
     clean_up_dict,
     get_pagination_info,
@@ -17,6 +15,7 @@ from adapters.driver.entrypoints.v1.models.product import (
     ProductV1Request,
     ProductV1Response,
 )
+from config.dependency_injection import Container
 from core.application.exceptions.commons_exceptions import (
     NoDocumentsFoundException,
 )
@@ -30,26 +29,28 @@ router = APIRouter(prefix="/products")
 
 
 @router.get("/", response_model=ListProductV1Response)
+@inject
 def list_products(
     response: Response,
     page: int = Query(default=1, gt=0),
     page_size: int = Query(default=10, gt=0, le=100),
     category: Category = Query(None),
+    product_service: ProductService = Depends(
+        Provide[Container.product_service]
+    ),
 ):
     try:
-        repository = ProductMongoRepository()
-        service = ProductService(repository)
 
         filter = {}
         if category:
             filter["category"] = category
 
-        products = service.list_products(
+        products = product_service.list_products(
             filter=filter,
             page=page,
             page_size=page_size,
         )
-        total_products = service.count_products(filter=filter)
+        total_products = product_service.count_products(filter=filter)
 
         pagination_info = get_pagination_info(
             total_results=total_products, page=page, page_size=page_size
@@ -74,14 +75,16 @@ def list_products(
 
 
 @router.get("/{id}", response_model=ProductV1Response)
+@inject
 async def get_product_by_id(
     id: str,
     response: Response,
+    product_service: ProductService = Depends(
+        Provide[Container.product_service]
+    ),
 ):
-    repository = ProductMongoRepository()
     try:
-        product = repository.get_by_id(id)
-
+        product = product_service.get_product_by_id(id)
     except Exception:
         raise InternalServerErrorHTTPException()
 
@@ -96,16 +99,18 @@ async def get_product_by_id(
 
 
 @router.post("", response_model=ProductV1Response)
+@inject
 async def register(
     create_product_request: ProductV1Request,
     response: Response,
+    product_service: ProductService = Depends(
+        Provide[Container.product_service]
+    ),
 ):
-    repository = ProductMongoRepository()
-    service = ProductService(repository)
 
     try:
         product = Product(**create_product_request.model_dump())
-        product = service.register_product(product)
+        product = product_service.register_product(product)
     except Exception:
         raise InternalServerErrorHTTPException()
 
@@ -118,15 +123,17 @@ async def register(
 
 
 @router.delete("/{id}")
+@inject
 async def delete(
     id: str,
     response: Response,
+    product_service: ProductService = Depends(
+        Provide[Container.product_service]
+    ),
 ):
-    product_repository = ProductMongoRepository()
-    service = ProductService(product_repository)
 
     try:
-        was_product_deleted = service.delete_product(id)
+        was_product_deleted = product_service.delete_product(id)
         if not was_product_deleted:
             raise InternalServerErrorHTTPException()
 
@@ -142,18 +149,19 @@ async def delete(
 
 
 @router.patch("/{id}", response_model=ProductV1Response)
+@inject
 async def update(
     id: str,
     product_request: ProductPatchV1Request,
     response: Response,
+    product_service: ProductService = Depends(
+        Provide[Container.product_service]
+    ),
 ):
-    product_repository = ProductMongoRepository()
-    service = ProductService(product_repository)
 
     try:
-
         cleaned_product_request = clean_up_dict(product_request.model_dump())
-        product = service.update_product(id, **cleaned_product_request)
+        product = product_service.update_product(id, **cleaned_product_request)
 
         response.status_code = status.HTTP_200_OK
         response.headers[HEADER_CONTENT_TYPE] = (

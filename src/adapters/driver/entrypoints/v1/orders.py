@@ -1,3 +1,4 @@
+from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query, Response, status
 
 from adapters.driven.repositories.utils import (
@@ -8,7 +9,6 @@ from adapters.driver.entrypoints.v1.exceptions.commons import (
     ConflictErrorHTTPException,
     InternalServerErrorHTTPException,
     NoDocumentsFoundHTTPException,
-    UnprocessableEntityErrorHTTPException,
 )
 from adapters.driver.entrypoints.v1.models.commons import (
     DeleteDocumentV1Response,
@@ -26,12 +26,7 @@ from adapters.driver.entrypoints.v1.models.queue import (
     ListQueueV1Response,
     QueueItemV1Response,
 )
-from config.dependencies_handlers import (
-    get_order_service,
-    get_product_service,
-    get_queue_service,
-    get_user_service,
-)
+from config.dependency_injection import Container
 from core.application.exceptions.commons_exceptions import (
     DataConflictException,
     NoDocumentsFoundException,
@@ -50,11 +45,12 @@ router = APIRouter(prefix="/order")
 
 
 @router.get("/queue", response_model=ListQueueV1Response)
+@inject
 async def list_queue_items(
     response: Response,
     page: int = Query(default=1, gt=0),
     page_size: int = Query(default=10, gt=0, le=100),
-    queue_service: QueueService = Depends(get_queue_service),
+    queue_service: QueueService = Depends(Provide[Container.queue_service]),
 ) -> ListQueueV1Response:
 
     queue_items = queue_service.list_queue_items(
@@ -82,13 +78,14 @@ async def list_queue_items(
 
 
 @router.get("", response_model=ListOrderV1Response)
+@inject
 async def list_orders(
     response: Response,
     order_status: list[Status] = Query(None),
     page: int = Query(default=1, gt=0),
     page_size: int = Query(default=10, gt=0, le=100),
-    order_service: OrderService = Depends(get_order_service),
-    user_service: UserService = Depends(get_user_service),
+    order_service: OrderService = Depends(Provide[Container.order_service]),
+    user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> ListOrderV1Response:
 
     orders_filter = OrderFilter(status=order_status)
@@ -125,11 +122,12 @@ async def list_orders(
 
 
 @router.get("/{id}", response_model=OrderV1Response)
+@inject
 async def get_order_by_id(
     id: str,
     response: Response,
-    order_service: OrderService = Depends(get_order_service),
-    user_service: UserService = Depends(get_user_service),
+    order_service: OrderService = Depends(Provide[Container.order_service]),
+    user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> OrderV1Response:
 
     order = order_service.get_order_by_id(id)
@@ -151,12 +149,15 @@ async def get_order_by_id(
 
 
 @router.post("", response_model=RegisterOrderV1Response)
+@inject
 async def register(
     create_order_request: RegisterOrderV1Request,
     response: Response,
-    order_service: OrderService = Depends(get_order_service),
-    user_service: UserService = Depends(get_user_service),
-    product_service: ProductService = Depends(get_product_service),
+    order_service: OrderService = Depends(Provide[Container.order_service]),
+    user_service: UserService = Depends(Provide[Container.user_service]),
+    product_service: ProductService = Depends(
+        Provide[Container.product_service]
+    ),
 ):
     try:
         if create_order_request.owner_id:
@@ -202,10 +203,11 @@ async def register(
 
 
 @router.delete("/{id}", response_model=DeleteDocumentV1Response)
+@inject
 async def delete(
     id: str,
     response: Response,
-    order_service: OrderService = Depends(get_order_service),
+    order_service: OrderService = Depends(Provide[Container.order_service]),
 ) -> DeleteDocumentV1Response:
 
     try:
@@ -225,12 +227,15 @@ async def delete(
 
 
 @router.patch("/{id}", response_model=OrderV1Response)
+@inject
 async def update(
     id: str,
     order_request: OrderPatchV1Request,
     response: Response,
-    order_service: OrderService = Depends(get_order_service),
-    product_service: ProductService = Depends(get_product_service),
+    order_service: OrderService = Depends(Provide[Container.order_service]),
+    product_service: ProductService = Depends(
+        Provide[Container.product_service]
+    ),
 ) -> OrderV1Response:
     try:
         old_order = order_service.get_order_by_id(id)
@@ -274,12 +279,13 @@ async def update(
 
 
 @router.patch("/fake-checkout/{order_id}")
+@inject
 async def set_payment_status(
     order_id: str,
     payment_result: PatchPaymentResultV1Request,
     response: Response,
-    order_service: OrderService = Depends(get_order_service),
-    queue_service: QueueService = Depends(get_queue_service),
+    order_service: OrderService = Depends(Provide[Container.order_service]),
+    queue_service: QueueService = Depends(Provide[Container.queue_service]),
 ):
 
     try:
