@@ -92,16 +92,16 @@ class OrderService:
     from datetime import datetime
 
 
-def is_order_being_prepared(status: Status) -> bool:
-    return (
-        Status(status) is Status.confirmed
-        or Status(status) is Status.being_prepared
-        or Status(status) is Status.received
-    )
+def is_order_in_queue(status: Status) -> bool:
+    return Status(status) in [
+        Status.confirmed,
+        Status.being_prepared,
+        Status.received,
+    ]
 
 
 def prepare_order_to_list(order: Order) -> OrderOutput:
     order_response = OrderOutput(**order.model_dump())
-    if is_order_being_prepared(order.status):
+    if is_order_in_queue(order.status) and order.paid_at is not None:
         order_response.waiting_time = get_seconds_diff(order.paid_at)
     return order_response
