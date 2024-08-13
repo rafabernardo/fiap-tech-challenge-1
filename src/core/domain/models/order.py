@@ -3,7 +3,7 @@ from enum import Enum
 
 from pydantic import BaseModel, field_validator
 
-from core.domain.models.user import User
+from core.domain.models.product import Product
 
 
 class Status(Enum):
@@ -25,7 +25,7 @@ class PaymentStatus(Enum):
 
 
 class OrderItem(BaseModel):
-    product_id: str
+    product: Product
     quantity: int
     price: int
 
@@ -40,6 +40,7 @@ class Order(BaseModel):
     owner_id: str | None = None
     payment_status: str  # PaymentStatus
     paid_at: datetime | None = None
+    total_price: int
 
     @field_validator("status")
     @classmethod

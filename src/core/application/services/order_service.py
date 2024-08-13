@@ -81,7 +81,22 @@ class OrderService:
 
         return updated_order
 
-    def prepare_new_order(self, new_order_data: dict) -> Order:
+    def prepare_new_order(
+        self, new_order_data: dict, products_data: list[dict]
+    ) -> Order:
+        total_price = sum(
+            [
+                product_data.get("price")
+                for product_data in products_data
+                if isinstance(product_data.get("price"), int)
+            ]
+        )
+        new_order_data.update(
+            {
+                "products": products_data,
+                "total_price": total_price,
+            }
+        )
         new_order = Order(
             **new_order_data,
             status="pending",
