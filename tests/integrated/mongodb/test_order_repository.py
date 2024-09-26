@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from adapters.driven.repositories.order_repository import OrderMongoRepository
-from core.domain.models.order import Order
+from models.order import Order
+from repositories.order_repository import OrderMongoRepository
 
 if __name__ == "__main__":
 
