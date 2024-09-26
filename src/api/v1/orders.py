@@ -164,6 +164,9 @@ async def register(
             found_product = product_service.get_product_by_id(
                 product.product_id
             )
+            if found_product is None:
+                message = f"No Product found with id '{product.product_id}'"
+                raise NoDocumentsFoundException(message)
             price = product.quantity * found_product.price
             products_data.append(
                 OrderItemV1Response(
@@ -173,9 +176,6 @@ async def register(
                 ).model_dump()
             )
 
-            if found_product is None:
-                message = f"No Product found with id '{product.product_id}'"
-                raise NoDocumentsFoundException(message)
         order = order_service.prepare_new_order(
             create_order_request.model_dump(), products_data
         )
