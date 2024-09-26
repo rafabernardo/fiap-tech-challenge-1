@@ -1,5 +1,5 @@
-from adapters.driven.repositories.user_repository import UserMongoRepository
-from core.domain.models.user import User
+from models.user import User
+from repositories.user_repository import UserMongoRepository
 
 if __name__ == "__main__":
     user_repository = UserMongoRepository()

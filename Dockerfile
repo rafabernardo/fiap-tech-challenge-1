@@ -13,4 +13,4 @@ COPY src/ /fiap-tech-challenge-1/src/
 RUN poetry install --no-dev
 
 #TODO verify how to run CMD as list of args
-CMD uvicorn src.adapters.driver.entrypoints.app:app --host 0.0.0.0 --port ${API_PORT}
+CMD uvicorn src.api.app:app --host 0.0.0.0 --port ${API_PORT}

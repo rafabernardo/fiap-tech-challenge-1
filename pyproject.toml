@@ -9,7 +9,11 @@ authors = [
 readme = "README.md"
 packages = [
     { include = "core", from = "src"},
-    { include = "adapters", from = "src"},
+    { include = "models", from = "src"},
+    { include = "api", from = "src"},
+    { include = "db", from = "src"},
+    { include = "repositories", from = "src"},
+    { include = "services", from = "src"},
 ]
 
 
