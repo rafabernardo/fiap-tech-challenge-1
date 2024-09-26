@@ -38,7 +38,7 @@ def list_products(
 
         filter = {}
         if category:
-            filter["category"] = category
+            filter["category"] = category.value
 
         products = product_service.list_products(
             filter=filter,
