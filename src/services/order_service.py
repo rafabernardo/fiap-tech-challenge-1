@@ -134,6 +134,12 @@ class OrderService:
             )
         return products_data
 
+    def get_payment_status(self, id: str) -> PaymentStatus:
+        order = self.get_order_by_id(id)
+        if not order:
+            raise NoDocumentsFoundException()
+        return PaymentStatus(order.payment_status)
+
 
 def is_order_in_queue(status: Status) -> bool:
     return Status(status) in [
