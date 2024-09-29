@@ -14,9 +14,7 @@ class QueueMongoRepository(QueueRepositoryInterface):
 
     def _add(self, queue_item: QueueItem) -> QueueItem:
         queue_item_data = queue_item.model_dump()
-        queue_item_to_db = prepare_document_to_db(
-            queue_item_data, pop_id=False
-        )
+        queue_item_to_db = prepare_document_to_db(queue_item_data)
         self.collection.insert_one(queue_item_to_db)
 
         final_queue_item = queue_item_to_db
