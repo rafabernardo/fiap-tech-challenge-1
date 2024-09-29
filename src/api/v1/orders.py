@@ -282,13 +282,13 @@ async def set_payment_status(
 
     try:
         order_service.set_payment_status(order_id, payment_result.result)
-        queue_service.register_queue_item(QueueItem(id=order_id))
+        if payment_result.result == True:
+            queue_item = QueueItem(order_id=order_id)
+            queue_service.register_queue_item(queue_item)
     except NoDocumentsFoundException:
         raise NoDocumentsFoundHTTPException()
     except DataConflictException:
         raise ConflictErrorHTTPException("Order payment can not be modified")
-    except Exception:
-        raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_204_NO_CONTENT
     response.headers[HEADER_CONTENT_TYPE] = (
