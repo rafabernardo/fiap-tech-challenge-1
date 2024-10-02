@@ -14,6 +14,13 @@ class QueueRepositoryInterface(abc.ABC):
         queue_item = self._get_by_id(id)
         return queue_item
 
+    def get_by_order_id(self, id: str) -> QueueItem:
+        queue_item = self._get_by_order_id(id)
+        return queue_item
+
+    def delete_queue_item(self, id: str) -> bool:
+        return self._delete_queue_item(id)
+
     def list_queue_items(
         self, filter: dict, page: int, page_size: int
     ) -> list[QueueItem]:
@@ -35,6 +42,10 @@ class QueueRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def _get_by_order_id(self, id: str) -> QueueItem:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def _list_queue_items(
         self, filter: dict, page: int, page_size: int
     ) -> list[QueueItem]:
@@ -42,4 +53,8 @@ class QueueRepositoryInterface(abc.ABC):
 
     @abc.abstractmethod
     def _count_queue_items(self, filter: dict) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _delete_queue_item(self, id: str) -> bool:
         raise NotImplementedError
