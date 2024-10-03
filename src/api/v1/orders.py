@@ -13,6 +13,7 @@ from api.v1.models.order import (
     OrderPatchV1Request,
     OrderV1Response,
     PatchPaymentResultV1Request,
+    PaymentStatusV1Response,
     RegisterOrderV1Request,
     RegisterOrderV1Response,
 )
@@ -296,7 +297,9 @@ async def set_payment_status(
     )
 
 
-@router.get("/get_payment_status/{order_id}")
+@router.get(
+    "/get_payment_status/{order_id}", response_model=PaymentStatusV1Response
+)
 @inject
 async def get_payment_status(
     order_id: str,
