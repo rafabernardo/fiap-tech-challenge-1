@@ -30,6 +30,21 @@ class QueueMongoRepository(QueueRepositoryInterface):
         queue_item = replace_id_key(queue_item)
         return QueueItem(**queue_item)
 
+    def _get_by_order_id(self, id: str) -> QueueItem | None:
+        query = self.get_queue_item_by_order_id_query(order_id=id)
+        queue_item: dict = self.collection.find_one(query)
+        if not queue_item:
+            return None
+
+        queue_item = replace_id_key(queue_item)
+        return QueueItem(**queue_item)
+
+    def _delete_queue_item(self, id: str) -> bool:
+        query = self.get_queue_item_by_id_query(id=id)
+        result = self.collection.delete_one(query)
+        was_queue_deleted = result.deleted_count > 0
+        return was_queue_deleted
+
     def _list_queue_items(
         self, filter: dict, page: int, page_size: int
     ) -> list[QueueItem] | None:
@@ -48,6 +63,11 @@ class QueueMongoRepository(QueueRepositoryInterface):
     @staticmethod
     def get_queue_item_by_id_query(id: str) -> dict:
         query = {"_id": ObjectId(id)}
+        return query
+
+    @staticmethod
+    def get_queue_item_by_order_id_query(order_id: str) -> dict:
+        query = {"order_id": order_id}
         return query
 
     @staticmethod

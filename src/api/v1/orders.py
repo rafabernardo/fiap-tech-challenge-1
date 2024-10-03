@@ -195,28 +195,30 @@ async def register(
     return created_order
 
 
-@router.delete("/{id}", response_model=DeleteDocumentV1Response)
+@router.delete("/{id}")
 @inject
 async def delete(
     id: str,
     response: Response,
     order_service: OrderService = Depends(Provide[Container.order_service]),
-) -> DeleteDocumentV1Response:
+    queue_service: QueueService = Depends(Provide[Container.queue_service]),
+):
 
     try:
+        queue_item = queue_service.get_queue_item_by_order_id(id)
+        if queue_item is not None:
+            queue_service.delete_queue_item(queue_item.id)
         was_order_deleted = order_service.delete_order(id)
+
+        if was_order_deleted:
+            response.status_code = status.HTTP_204_NO_CONTENT
+            return
+        raise InternalServerErrorHTTPException()
+
     except NoDocumentsFoundException as exc:
         raise NoDocumentsFoundHTTPException(detail=exc.message)
     except Exception:
         raise InternalServerErrorHTTPException()
-
-    if not was_order_deleted:
-        raise InternalServerErrorHTTPException()
-
-    response.status_code = status.HTTP_204_NO_CONTENT
-    response.headers[HEADER_CONTENT_TYPE] = (
-        HEADER_CONTENT_TYPE_APPLICATION_JSON
-    )
 
 
 @router.patch("/{id}", response_model=OrderV1Response)

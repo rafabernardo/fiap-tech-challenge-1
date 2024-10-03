@@ -14,6 +14,13 @@ class QueueService:
         queue_item = self.repository.get_by_id(id)
         return queue_item
 
+    def get_queue_item_by_order_id(self, id: str) -> QueueItem | None:
+        queue_item = self.repository.get_by_order_id(id)
+        return queue_item
+
+    def delete_queue_item(self, id: str) -> bool:
+        return self.repository.delete_queue_item(id)
+
     def list_queue_items(
         self, filter: dict, page: int, page_size: int
     ) -> list[QueueItem]:
