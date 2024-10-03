@@ -55,3 +55,7 @@ class OrderPatchV1Request(BaseModel):
     products: list[OrderItemV1Request] | None = Field(None, min_length=1)
     status: str | None = None
     payment_status: str | None = None
+
+
+class PaymentStatusV1Response(BaseModel):
+    payment_status: str | None = None

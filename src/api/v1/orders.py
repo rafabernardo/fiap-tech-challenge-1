@@ -13,6 +13,7 @@ from api.v1.models.order import (
     OrderPatchV1Request,
     OrderV1Response,
     PatchPaymentResultV1Request,
+    PaymentStatusV1Response,
     RegisterOrderV1Request,
     RegisterOrderV1Response,
 )
@@ -294,3 +295,28 @@ async def set_payment_status(
     response.headers[HEADER_CONTENT_TYPE] = (
         HEADER_CONTENT_TYPE_APPLICATION_JSON
     )
+
+
+@router.get(
+    "/get_payment_status/{order_id}", response_model=PaymentStatusV1Response
+)
+@inject
+async def get_payment_status(
+    order_id: str,
+    response: Response,
+    order_service: OrderService = Depends(Provide[Container.order_service]),
+):
+    try:
+        payment_status = order_service.get_payment_status(order_id)
+        response.status_code = status.HTTP_200_OK
+        response.headers[HEADER_CONTENT_TYPE] = (
+            HEADER_CONTENT_TYPE_APPLICATION_JSON
+        )
+
+        payment_status_response = {"payment_status": payment_status.value}
+
+        return payment_status_response
+    except NoDocumentsFoundException:
+        raise NoDocumentsFoundHTTPException()
+    except Exception:
+        raise InternalServerErrorHTTPException()
