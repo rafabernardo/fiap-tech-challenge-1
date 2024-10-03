@@ -282,7 +282,7 @@ async def set_payment_status(
 
     try:
         order_service.set_payment_status(order_id, payment_result.result)
-        if payment_result.result == True:
+        if payment_result.result is True:
             queue_item = QueueItem(order_id=order_id)
             queue_service.register_queue_item(queue_item)
     except NoDocumentsFoundException:
