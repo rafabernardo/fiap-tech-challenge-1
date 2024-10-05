@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: fiap-soad
-        image: alceuramos/dev:1.0.0
+        image: alceuramos/dev:1.0.2
         ports:
         - containerPort: 80
           name: http
@@ -28,6 +28,11 @@ spec:
         env:
         - name: API_PORT
           value: "80"
+        - name: MONGO_URI
+          valueFrom:
+            configMapKeyRef:
+              name: env-config
+              key: MONGO_URI 
         - name: MONGO_URL
           valueFrom:
             configMapKeyRef:
