@@ -11,6 +11,7 @@ class Status(Enum):
     confirmed = "confirmed"
     received = "received"
     being_prepared = "being_prepared"
+    ready = "ready"
     finished = "finished"
     # Only for orders that were not collected from client
     returned = "returned"
