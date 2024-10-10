@@ -32,7 +32,9 @@ class OrderService:
 
     def get_order_by_id(self, id: str) -> Order:
         order = self.repository.get_by_id(id)
-        return order
+        if order is None:
+            raise NoDocumentsFoundException()
+        return prepare_order_to_list(order)
 
     def list_orders(
         self, order_filter: OrderFilter, page: int, page_size: int
