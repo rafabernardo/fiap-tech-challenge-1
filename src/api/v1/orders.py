@@ -6,7 +6,6 @@ from api.v1.exceptions.commons import (
     InternalServerErrorHTTPException,
     NoDocumentsFoundHTTPException,
 )
-from api.v1.models.commons import DeleteDocumentV1Response
 from api.v1.models.order import (
     ListOrderV1Response,
     OrderItemV1Response,
@@ -322,3 +321,51 @@ async def get_payment_status(
         raise NoDocumentsFoundHTTPException()
     except Exception:
         raise InternalServerErrorHTTPException()
+
+
+@router.get("/display-orders/", response_model=ListOrderV1Response)
+@inject
+async def list_orders(
+    response: Response,
+    page: int = Query(default=1, gt=0),
+    page_size: int = Query(default=10, gt=0, le=100),
+    order_service: OrderService = Depends(Provide[Container.order_service]),
+    user_service: UserService = Depends(Provide[Container.user_service]),
+) -> ListOrderV1Response:
+
+    orders = order_service.list_orders_to_display(
+        page=page, page_size=page_size
+    )
+    order_filter = OrderFilter(
+        status=[
+            Status.ready.value,
+            Status.received.value,
+            Status.being_prepared.value,
+        ]
+    )
+    total_orders = order_service.count_orders(order_filter=order_filter)
+
+    pagination_info = get_pagination_info(
+        total_results=total_orders, page=page, page_size=page_size
+    )
+    listed_orders = []
+    for order in orders:
+        owner_data = (
+            user_service.get_user_by_id(order.owner_id).model_dump()
+            if order.owner_id
+            else None
+        )
+        order_response = OrderV1Response(
+            **order.model_dump(), owner=owner_data
+        )
+        listed_orders.append(order_response)
+
+    paginated_orders = ListOrderV1Response(
+        **pagination_info.model_dump(), results=listed_orders
+    )
+
+    response.status_code = status.HTTP_200_OK
+    response.headers[HEADER_CONTENT_TYPE] = (
+        HEADER_CONTENT_TYPE_APPLICATION_JSON
+    )
+    return paginated_orders
