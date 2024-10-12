@@ -15,10 +15,17 @@ class OrderRepositoryInterface(abc.ABC):
         return order
 
     def list_orders(
-        self, order_filter: OrderFilter, page: int, page_size: int
+        self,
+        order_filter: OrderFilter,
+        page: int,
+        page_size: int,
+        sort: dict = None,
     ) -> list[Order]:
         orders = self._list_orders(
-            order_filter=order_filter, page=page, page_size=page_size
+            order_filter=order_filter,
+            page=page,
+            page_size=page_size,
+            sort=sort,
         )
         return orders
 
@@ -39,12 +46,10 @@ class OrderRepositoryInterface(abc.ABC):
 
     def add_order_item(self, id: str, order_item: OrderItem) -> None:
         self._add_order_item(id, order_item)
-        # self.seen.add(_add_order_item) # Add Order ??
 
     def list_order_items_by_order_id(self, id) -> list[OrderItem]:
         order_items = self._list_order_items_by_order_id(id)
-        # if order_items:
-        #     self.seen.union(set(users)) # Add Order ??
+
         return order_items
 
     @abc.abstractmethod
@@ -57,7 +62,7 @@ class OrderRepositoryInterface(abc.ABC):
 
     @abc.abstractmethod
     def _list_orders(
-        self, filter: OrderFilter, page: int, page_size: int
+        self, filter: OrderFilter, page: int, page_size: int, sort: dict = None
     ) -> list[Order]:
         raise NotImplementedError
 
