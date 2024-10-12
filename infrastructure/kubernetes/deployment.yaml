@@ -2,8 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fiap-soad
+  labels:
+    app: fiap-soad
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: fiap-soad
@@ -13,50 +15,52 @@ spec:
         app: fiap-soad
     spec:
       containers:
-      - name: fiap-soad
-        image: alceuramos/dev:1.0.2
-        ports:
-        - containerPort: 80
-          name: http
-        resources:
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
-          requests:
-            cpu: "200m"
-            memory: "256Mi"
-        env:
-        - name: API_PORT
-          value: "80"
-        - name: MONGO_URI
-          valueFrom:
-            configMapKeyRef:
-              name: env-config
-              key: MONGO_URI 
-        - name: MONGO_URL
-          valueFrom:
-            configMapKeyRef:
-              name: env-config
-              key: MONGO_URL 
-        - name: MONGO_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: env-config
-              key: MONGO_PORT 
-        - name: MONGO_USERNAME
-          valueFrom:
-            configMapKeyRef:
-              name: env-config
-              key: MONGO_USERNAME 
-        - name: MONGO_PASSWORD
-          valueFrom:
-            configMapKeyRef:
-              name: env-config
-              key: MONGO_PASSWORD 
-        - name: MONGO_DATABASE
-          valueFrom:
-            configMapKeyRef:
-              name: env-config
-              key: MONGO_DATABASE 
+        - name: fiap-soad
+          image: alceuramos/dev:1.0.2
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+          env:
+            - name: API_PORT
+              value: "80"
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_URI
+            - name: MONGO_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_URL
+            - name: MONGO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_PORT
+            - name: MONGO_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_USERNAME
+            - name: MONGO_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_PASSWORD
+            - name: MONGO_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_DATABASE
+      # nodeSelector:
+      #   ingress-ready: "true"
       imagePullSecrets:
-      - name: dockerhub-secret
+        - name: dockerhub-secret

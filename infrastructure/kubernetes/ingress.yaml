@@ -1,18 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: fiap-soad-ingress
+  name: example-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
-  - host: fiap-soad.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: fiap-soad-service
-            port:
-              number: 80
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /fiap-soad
+            backend:
+              service:
+                name: fiap-soad-service
+                port:
+                  number: 80
