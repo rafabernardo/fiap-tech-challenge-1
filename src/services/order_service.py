@@ -142,6 +142,38 @@ class OrderService:
             raise NoDocumentsFoundException()
         return PaymentStatus(order.payment_status)
 
+    def list_orders_to_display(
+        self, page: int, page_size: int
+    ) -> list[OrderOutput]:
+
+        order_filter = OrderFilter(
+            status=[
+                Status.ready.value,
+                Status.being_prepared.value,
+                Status.received.value,
+            ]
+        )
+        sort_by = {
+            "status": [
+                Status.ready.value,
+                Status.being_prepared.value,
+                Status.received.value,
+            ],
+            "created_at": -1,
+        }
+        paginated_orders = self.repository.list_orders(
+            order_filter=order_filter,
+            page=page,
+            page_size=page_size,
+            sort=sort_by,
+        )
+
+        listed_orders = [
+            prepare_order_to_list(order) for order in paginated_orders
+        ]
+
+        return listed_orders
+
 
 def is_order_in_queue(status: Status) -> bool:
     return Status(status) in [
