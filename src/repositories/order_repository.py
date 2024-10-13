@@ -35,13 +35,6 @@ class OrderMongoRepository(OrderRepositoryInterface):
         query = self.get_order_by_id_query(id=id)
         return self.collection.count_documents(query) > 0
 
-    def _list_orders(self) -> list[Order] | None:
-        query = self.get_list_orders_query()
-        orders = list(self.collection.find(query))
-        if not orders:
-            return None
-        return [Order(**replace_id_key(order)) for order in orders]
-
     def _update_order(self, id, **kwargs) -> Order:
         id_query = self.get_order_by_id_query(id)
         order_to_update = prepare_document_to_db(kwargs, skip_created_at=True)
@@ -55,11 +48,19 @@ class OrderMongoRepository(OrderRepositoryInterface):
         return Order(**updated_order)
 
     def _list_orders(
-        self, order_filter: OrderFilter, page: int, page_size: int
+        self, order_filter: OrderFilter, page: int, page_size: int, sort: dict
     ) -> list[Order]:
         query = self.parse_order_filter_to_query(order_filter)
         skip = (page - 1) * page_size
-        orders = list(self.collection.find(query).skip(skip).limit(page_size))
+        orders = []
+
+        if sort:
+            pipeline = self.create_list_pipeline(query, sort, skip, page_size)
+            orders.extend(self.collection.aggregate(pipeline))
+        else:
+            orders.extend(
+                self.collection.find(query).skip(skip).limit(page_size)
+            )
 
         return [Order(**replace_id_key(order)) for order in orders]
 
@@ -104,3 +105,41 @@ class OrderMongoRepository(OrderRepositoryInterface):
             )
         }
         return query
+
+    @staticmethod
+    def prepare_order_sort_aggregate(sort: dict) -> list[dict]:
+        aggregate = []
+        if "status" in sort:
+            aggregate.append(
+                {
+                    "$addFields": {
+                        "statusOrder": {
+                            "$indexOfArray": [sort["status"], "$status"]
+                        }
+                    }
+                }
+            )
+            aggregate.append({"$sort": {"statusOrder": 1}})
+
+        if "created_at" in sort:
+            sort_stage = next(
+                (item for item in aggregate if "$sort" in item), None
+            )
+            if sort_stage:
+                sort_stage["$sort"]["created_at"] = sort["created_at"]
+            else:
+                aggregate.append({"$sort": {"created_at": sort["created_at"]}})
+
+        return aggregate
+
+    def create_list_pipeline(
+        self, query: dict, sort: dict, skip: int, limit: int
+    ) -> dict:
+        aggregate_sort = self.prepare_order_sort_aggregate(sort)
+        pipeline = [
+            {"$match": query},
+        ]
+        pipeline.extend(aggregate_sort)
+        pipeline.append({"$skip": skip})
+        pipeline.append({"$limit": limit})
+        return pipeline
