@@ -12,6 +12,9 @@ Para visualizar o diagrama criado a partir dos eventos, consulte o [board no Mir
 
 ## Arquitetura da infraestrutura
 
+O projeto foi desenvolvido para ser executado em um cluster Kubernetes com Kind localmente. Para mais informações de como configurar e rodar, consulte o
+[README da infraestrutura](infrastructure/kubernetes/README.md).
+
 ```mermaid
 flowchart TD
     US(User)
