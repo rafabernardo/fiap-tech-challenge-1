@@ -40,3 +40,10 @@ $ kubectl apply -f infrastructure/kubernetes/service.yaml
 $ kubectl apply -f infrastructure/kubernetes/ingress.yaml
 $ kubectl apply -f infrastructure/kubernetes/hpa.yaml
 ```
+
+Add metrics-server to monitoring resources
+```bash
+ $ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.5.0/components.yaml
+ $ kubectl patch -n kube-system deployment metrics-server --type=json \
+  -p '[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+```
