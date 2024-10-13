@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fiap-soad
+  labels:
+    app: fiap-soad
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fiap-soad
+  template:
+    metadata:
+      labels:
+        app: fiap-soad
+    spec:
+      containers:
+        - name: fiap-soad
+          image: local:image
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "250Mi"
+            requests:
+              cpu: "100m"
+              memory: "150Mi"
+          env:
+            - name: API_PORT
+              value: "80"
+            - name: MONGO_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_URI
+            - name: MONGO_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_URL
+            - name: MONGO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_PORT
+            - name: MONGO_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_USERNAME
+            - name: MONGO_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_PASSWORD
+            - name: MONGO_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: MONGO_DATABASE
