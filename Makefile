@@ -57,3 +57,16 @@ k-create-docker-secret:
 
 k-delete-docker-secret:
 	kubectl delete secret dockerhub-secret
+
+k-apply-nginx-ingress:
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+
+k-apply-metric-svc:
+  kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.5.0/components.yaml
+
+k-apply-patch-metric-svc:
+  kubectl patch -n kube-system deployment metrics-server --type=json \
+  -p '[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+
+docker-build-local-image:
+	docker build -t local:image .
