@@ -11,7 +11,7 @@ $ # kind create cluster --config infrastructure/kubernetes/cluster.yaml
 ```
 
 Set dockerhub-secret to download the app Docker image
-
+Only needed to private repositories
 ```bash
 $ kubectl create secret docker-registry dockerhub-secret \
   --docker-server=https://index.docker.io/v1/ \
@@ -32,7 +32,6 @@ $ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/ma
 ```
 
 Create pods, services and ingress
-
 ```bash
 $ kubectl apply -f infrastructure/kubernetes/deployment-local.yaml
 $ # kubectl apply -f infrastructure/kubernetes/deployment-prod.yaml
