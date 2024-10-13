@@ -10,6 +10,62 @@ Este projeto é uma API RESTful desenvolvida em Python utilizando o framework Fa
 
 Para visualizar o diagrama criado a partir dos eventos, consulte o [board no Miro](https://shorturl.at/3xRZ9).
 
+## Arquitetura da infraestrutura
+
+```mermaid
+flowchart TD
+    US(User)
+    subgraph K["Kind Kubernetes Cluster"]
+        CP["Control Plane Node"]
+        W["Worker Node"]
+        HPA["HPA: fiap-soad-hpa
+        min: 2, max: 5
+        CPU target: 50%"]
+        DEP["Deployment: fiap-soad
+        Replicas: 2-5"]
+        SVC["Service: fiap-soad-service
+        Port: 80 -> 80"]
+        ING["Ingress: example-ingress
+        Path: /fiap-soad/?(.*)
+        Annotations: rewrite-target=/$1"]
+        NGINX["NGINX Ingress Controller"]
+        subgraph P["Pods"]
+            C1["Container 1: fiap-soad
+            FastAPI Application
+            Image: project-image
+            Port: 80
+            ENV: API_PORT=80, MONGO_URI"]
+            C2["Container 2: fiap-soad
+            FastAPI Application
+            Image: project-image
+            Port: 80
+            ENV: API_PORT=80, MONGO_URI"]
+            CN["Container N: fiap-soad
+            FastAPI Application
+            Image: project-image
+            Port: 80
+            ENV: API_PORT=80, MONGO_URI"]
+        end
+        MS["Metrics Server
+        Monitors Resource Usage"]
+    end
+    DB[(MongoDB Atlas
+    External Database)]
+
+    US -->|HTTP request| ING
+    ING --> SVC
+    ING --> NGINX
+    SVC --> DEP
+    DEP --> P
+    HPA -->|scales 2-5 replicas| DEP
+    MS --> HPA
+    C1 & C2 & CN -->|connect to| DB
+    CP -->|manages| W
+
+    classDef scaled stroke-dasharray: 5 5;
+    class CN scaled;
+```
+
 ## Requisitos Funcionais do Projeto
 
 ### 1. Identificação do Cliente
