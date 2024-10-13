@@ -1,5 +1,4 @@
 include .env
-include .env.kubernetes
 
 API_PORT ?= 8000
 
