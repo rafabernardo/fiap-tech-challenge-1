@@ -6,9 +6,70 @@
 
 Este projeto é uma API RESTful desenvolvida em Python utilizando o framework FastAPI e banco de dados MongoDB. Foi criado aplicando os principais conceitos de arquitetura de software, como SOLID, DDD (Domain-Driven Design) e Clean Architecture.
 
+Para uma explicação sobre a infraestrutura e demonstração do funcionamento da API, assista o [Video](https://www.youtube.com/watch?v=avYM730vDaI).
+
 ## Event Storming
 
 Para visualizar o diagrama criado a partir dos eventos, consulte o [board no Miro](https://shorturl.at/3xRZ9).
+
+## Arquitetura da infraestrutura
+
+O projeto foi desenvolvido para ser executado em um cluster Kubernetes com Kind localmente. Para mais informações de como configurar e rodar, consulte o
+[README da infraestrutura](infrastructure/kubernetes/README.md).
+
+```mermaid
+flowchart TD
+    US(User)
+    subgraph K["Kind Kubernetes Cluster"]
+        CP["Control Plane Node"]
+        W["Worker Node"]
+        HPA["HPA: fiap-soad-hpa
+        min: 2, max: 5
+        CPU target: 50%"]
+        DEP["Deployment: fiap-soad
+        Replicas: 2-5"]
+        SVC["Service: fiap-soad-service
+        Port: 80 -> 80"]
+        ING["Ingress: example-ingress
+        Path: /fiap-soad/?(.*)
+        Annotations: rewrite-target=/$1"]
+        NGINX["NGINX Ingress Controller"]
+        subgraph P["Pods"]
+            C1["Container 1: fiap-soad
+            FastAPI Application
+            Image: project-image
+            Port: 80
+            ENV: API_PORT=80, MONGO_URI"]
+            C2["Container 2: fiap-soad
+            FastAPI Application
+            Image: project-image
+            Port: 80
+            ENV: API_PORT=80, MONGO_URI"]
+            CN["Container N: fiap-soad
+            FastAPI Application
+            Image: project-image
+            Port: 80
+            ENV: API_PORT=80, MONGO_URI"]
+        end
+        MS["Metrics Server
+        Monitors Resource Usage"]
+    end
+    DB[(MongoDB Atlas
+    External Database)]
+
+    US -->|HTTP request| ING
+    ING --> SVC
+    ING --> NGINX
+    SVC --> DEP
+    DEP --> P
+    HPA -->|scales 2-5 replicas| DEP
+    MS --> HPA
+    C1 & C2 & CN -->|connect to| DB
+    CP -->|manages| W
+
+    classDef scaled stroke-dasharray: 5 5;
+    class CN scaled;
+```
 
 ## Requisitos Funcionais do Projeto
 

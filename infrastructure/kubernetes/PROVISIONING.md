@@ -1,5 +1,3 @@
-Guide: [GPT chat](https://chatgpt.com/share/66f9bacc-a798-800b-ad31-fc2bb0a6fe4b)
-
 Install [Kubectl](https://kubernetes.io/docs/tasks/tools/)
 Install [KIND](https://kind.sigs.k8s.io/docs/user/quick-start/)
 
@@ -12,6 +10,7 @@ $ # kind create cluster --config infrastructure/kubernetes/cluster.yaml
 
 Set dockerhub-secret to download the app Docker image
 Only needed to private repositories
+
 ```bash
 $ kubectl create secret docker-registry dockerhub-secret \
   --docker-server=https://index.docker.io/v1/ \
@@ -32,6 +31,7 @@ $ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/ma
 ```
 
 Create pods, services and ingress
+
 ```bash
 $ kubectl apply -f infrastructure/kubernetes/deployment-local.yaml
 $ # kubectl apply -f infrastructure/kubernetes/deployment-prod.yaml
@@ -41,6 +41,7 @@ $ kubectl apply -f infrastructure/kubernetes/hpa.yaml
 ```
 
 Add metrics-server to monitoring resources
+
 ```bash
  $ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.5.0/components.yaml
  $ kubectl patch -n kube-system deployment metrics-server --type=json \
