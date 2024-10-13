@@ -6,6 +6,8 @@
 
 Este projeto é uma API RESTful desenvolvida em Python utilizando o framework FastAPI e banco de dados MongoDB. Foi criado aplicando os principais conceitos de arquitetura de software, como SOLID, DDD (Domain-Driven Design) e Clean Architecture.
 
+Para uma explicação sobre a infraestrutura e demonstração do funcionamento da API, assista o [Video](https://www.youtube.com/watch?v=avYM730vDaI).
+
 ## Event Storming
 
 Para visualizar o diagrama criado a partir dos eventos, consulte o [board no Miro](https://shorturl.at/3xRZ9).
