@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
         - name: fiap-soad
-          image: alceuramos/dev:1.0.2
+          image: local:image
+          imagePullPolicy: Never
           ports:
             - containerPort: 80
               name: http
@@ -62,5 +63,5 @@ spec:
                   key: MONGO_DATABASE
       # nodeSelector:
       #   ingress-ready: "true"
-      imagePullSecrets:
-        - name: dockerhub-secret
+      # imagePullSecrets:
+      #   - name: dockerhub-secret

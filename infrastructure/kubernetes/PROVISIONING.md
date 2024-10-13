@@ -34,14 +34,9 @@ $ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/ma
 Create pods, services and ingress
 
 ```bash
-$ kubectl apply -f infrastructure/kubernetes/deployment.yaml
+$ kubectl apply -f infrastructure/kubernetes/deployment-local.yaml
+$ # kubectl apply -f infrastructure/kubernetes/deployment-prod.yaml
 $ kubectl apply -f infrastructure/kubernetes/service.yaml
 $ kubectl apply -f infrastructure/kubernetes/ingress.yaml
 $ kubectl apply -f infrastructure/kubernetes/hpa.yaml
-```
-
-```bash
-$ kubectl port-forward svc/fiap-soad-service 8080:80
-$ # kubectl port-forward svc/service-name <mapped-port>:<node-port>
-$ # it may be needed becouse of missconfiguration between Ingress and NGINX
 ```
