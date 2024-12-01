@@ -23,29 +23,29 @@ flowchart TD
     subgraph K["Kind Kubernetes Cluster"]
         CP["Control Plane Node"]
         W["Worker Node"]
-        HPA["HPA: fiap-soad-hpa
+        HPA["HPA: fiap-soat-hpa
         min: 2, max: 5
         CPU target: 50%"]
-        DEP["Deployment: fiap-soad
+        DEP["Deployment: fiap-soat
         Replicas: 2-5"]
-        SVC["Service: fiap-soad-service
+        SVC["Service: fiap-soat-service
         Port: 80 -> 80"]
         ING["Ingress: example-ingress
-        Path: /fiap-soad/?(.*)
+        Path: /fiap-soat/?(.*)
         Annotations: rewrite-target=/$1"]
         NGINX["NGINX Ingress Controller"]
         subgraph P["Pods"]
-            C1["Container 1: fiap-soad
+            C1["Container 1: fiap-soat
             FastAPI Application
             Image: project-image
             Port: 80
             ENV: API_PORT=80, MONGO_URI"]
-            C2["Container 2: fiap-soad
+            C2["Container 2: fiap-soat
             FastAPI Application
             Image: project-image
             Port: 80
             ENV: API_PORT=80, MONGO_URI"]
-            CN["Container N: fiap-soad
+            CN["Container N: fiap-soat
             FastAPI Application
             Image: project-image
             Port: 80
@@ -140,6 +140,7 @@ Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 | Variável               | Descrição                          | Exemplo       |
 | ---------------------- | ---------------------------------- | ------------- |
 | API_PORT               | Porta de acesso à API              | 8000          |
+| MONGO_URI              | URI  completa para o MongoDB       |               |
 | MONGO_URL              | URL de acesso ao MongoDB           | localhost     |
 | MONGO_PORT             | Porta de acesso ao MongoDB         | 27017         |
 | MONGO_DATABASE         | Database utilizada no MongoDB      | database_test |
@@ -147,6 +148,12 @@ Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 | MONGO_PASSWORD         | Senha de acesso ao MongoDB         | pass          |
 | MONGO_EXPRESS_USERNAME | Usuário de acesso ao Mongo Express | user          |
 | MONGO_EXPRESS_PASSWORD | Senha de acesso ao Mongo Express   | pass          |
+| POSTGRESQL_URI         | URI  completa para o MongoDB       |               |
+| POSTGRESQL_URL         | URL de acesso ao MongoDB           | localhost     |
+| POSTGRESQL_PORT        | Porta de acesso ao MongoDB         | 5432          |
+| POSTGRESQL_USERNAME    | Database utilizada no MongoDB      | database_test |
+| POSTGRESQL_PASSWORD    | Usuário de acesso ao MongoDB       | user          |
+| POSTGRESQL_DATABASE    | Senha de acesso ao MongoDB         | pass          |
 
 ## Execução do Projeto
 
