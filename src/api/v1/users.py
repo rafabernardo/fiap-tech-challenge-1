@@ -1,5 +1,4 @@
-from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Response, status
+import traceback
 
 from api.v1.exceptions.commons import (
     InternalServerErrorHTTPException,
@@ -17,6 +16,8 @@ from core.exceptions.user_exceptions import (
     UserAlreadyExistsError,
     UserInvalidFormatDataError,
 )
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends, Response, status
 from models.user import User
 from services.user_service import UserService
 
@@ -36,6 +37,7 @@ async def list_users(
     try:
         users = user_service.list_users()
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_200_OK
@@ -56,6 +58,7 @@ async def get_user_by_id(
     try:
         user = user_service.get_user_by_id(id)
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     if not user:
@@ -84,6 +87,7 @@ async def get_user_by_cpf(
             detail=exc.message,
         )
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     if user is None:
@@ -113,6 +117,7 @@ async def register(
     except UserInvalidFormatDataError as exc:
         raise UnprocessableEntityErrorHTTPException(detail=exc.message)
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_201_CREATED
@@ -143,6 +148,7 @@ async def delete(
     except NoDocumentsFoundException:
         raise NoDocumentsFoundHTTPException()
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
 
@@ -175,4 +181,5 @@ async def identify_user(
     except UserAlreadyExistsError as exc:
         raise UnprocessableEntityErrorHTTPException(exc.message)
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
