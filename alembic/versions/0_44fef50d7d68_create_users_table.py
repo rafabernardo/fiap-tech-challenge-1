@@ -37,6 +37,15 @@ def upgrade() -> None:
     op.create_index("ix_users_id", "users", ["id"], unique=False)
     op.create_index("ix_users_name", "users", ["name"], unique=False)
     op.create_index("ix_users_cpf", "users", ["cpf"], unique=False)
+<<<<<<< HEAD
+=======
+    op.create_index(
+        "ix_users_created_at", "users", ["created_at"], unique=False
+    )
+    op.create_index(
+        "ix_users_updated_at", "users", ["updated_at"], unique=False
+    )
+>>>>>>> da6d91a (feat: Create products table and update users table migration)
 
 
 def downgrade() -> None:
