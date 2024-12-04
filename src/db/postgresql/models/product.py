@@ -9,7 +9,7 @@ class ProductModel(Base):
     __tablename__ = "products"
     __table_args__ = {"extend_existing": True}
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(String, nullable=False, index=True)
     category = Column(String, nullable=False, index=True)
     price = Column(Integer, nullable=False)
