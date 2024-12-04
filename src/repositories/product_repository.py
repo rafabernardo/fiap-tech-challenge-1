@@ -1,7 +1,7 @@
 from bson import ObjectId
 
+from db.interfaces.product import ProductsRepositoryInterface
 from db.mongodb.database import get_mongo_database
-from db.mongodb.interfaces.product import ProductsRepositoryInterface
 from models.product import Product
 from repositories.utils import prepare_document_to_db, replace_id_key
 

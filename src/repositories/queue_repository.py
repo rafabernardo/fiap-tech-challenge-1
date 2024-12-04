@@ -1,7 +1,7 @@
 from bson import ObjectId
 
+from db.interfaces.queue import QueueRepositoryInterface
 from db.mongodb.database import get_mongo_database
-from db.mongodb.interfaces.queue import QueueRepositoryInterface
 from models.queue import QueueItem
 from repositories.utils import prepare_document_to_db, replace_id_key
 

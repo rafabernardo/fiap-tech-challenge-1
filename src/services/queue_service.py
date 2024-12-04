@@ -1,4 +1,4 @@
-from db.mongodb.interfaces.queue import QueueRepositoryInterface
+from db.interfaces.queue import QueueRepositoryInterface
 from models.queue import QueueItem
 
 

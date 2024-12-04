@@ -3,8 +3,8 @@ from datetime import datetime
 from bson import ObjectId
 from pymongo import ReturnDocument
 
+from db.interfaces.user import UserRepositoryInterface
 from db.mongodb.database import get_mongo_database
-from db.mongodb.interfaces.user import UserRepositoryInterface
 from models.user import User
 from repositories.utils import prepare_document_to_db, replace_id_key
 

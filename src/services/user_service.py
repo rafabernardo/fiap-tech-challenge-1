@@ -4,7 +4,7 @@ from core.exceptions.user_exceptions import (
     UserInvalidFormatDataError,
 )
 from core.validators.user import validate_cpf, validate_email
-from db.mongodb.interfaces.user import UserRepositoryInterface
+from db.interfaces.user import UserRepositoryInterface
 from models.user import User
 from services.utils import clean_cpf_to_db
 

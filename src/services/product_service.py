@@ -1,5 +1,5 @@
 from core.exceptions.commons_exceptions import NoDocumentsFoundException
-from db.mongodb.interfaces.product import ProductsRepositoryInterface
+from db.interfaces.product import ProductsRepositoryInterface
 from models.product import Product
 
 
