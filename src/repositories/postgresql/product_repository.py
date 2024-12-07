@@ -27,26 +27,28 @@ class ProductPostgresRepository(ProductsRepositoryInterface):
         try:
             with self.db_session() as session:
                 product = session.query(ProductModel).filter_by(id=id).one()
-                return Product(**product.__dict__)
+            return Product(**product.__dict__)
         except NoResultFound:
             return None
 
     def _list_products(
         self, filter: dict, page: int, page_size: int
     ) -> list[Product]:
-        skip = (page - 1) * page_size
-        query = (
-            select(ProductModel)
-            .filter_by(**filter)
-            .offset(skip)
-            .limit(page_size)
-        )
-        result = self.session.execute(query).scalars().all()
+        with self.db_session() as session:
+            skip = (page - 1) * page_size
+            query = (
+                select(ProductModel)
+                .filter_by(**filter)
+                .offset(skip)
+                .limit(page_size)
+            )
+            result = session.execute(query).scalars().all()
         return [Product(**product.__dict__) for product in result]
 
     def _count_products(self, filter: dict) -> int:
-        query = select(ProductModel).filter_by(**filter)
-        result = self.session.execute(query).scalars().all()
+        with self.db_session() as session:
+            query = select(ProductModel).filter_by(**filter)
+            result = session.execute(query).scalars().all()
         return len(result)
 
     def _exists_by_id(self, id: str) -> bool:

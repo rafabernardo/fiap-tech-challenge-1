@@ -65,8 +65,8 @@ def list_products(
         )
 
         return paginated_orders
-    except Exception:
-        raise InternalServerErrorHTTPException()
+    except Exception as e:
+        raise Exception(e)
 
 
 @router.get("/{id}", response_model=ProductV1Response)
