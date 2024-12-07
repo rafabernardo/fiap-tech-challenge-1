@@ -17,7 +17,7 @@ class UserPostgresRepository(UserRepositoryInterface):
         """
         self.db_session = get_postgresql_session
 
-    def add(self, user: User) -> User:
+    def _add(self, user: User) -> User:
         """
         Add a new user to the database.
         """
@@ -30,7 +30,7 @@ class UserPostgresRepository(UserRepositoryInterface):
             session.refresh(user_model)
         return User.model_validate(user_model)
 
-    def get_by_id(self, user_id: int) -> User | None:
+    def _get_by_id(self, user_id: int) -> User | None:
         """
         Fetch a user by their ID.
         """
@@ -42,7 +42,7 @@ class UserPostgresRepository(UserRepositoryInterface):
         except NoResultFound:
             return None
 
-    def list_users(self) -> list[User]:
+    def _list_users(self) -> list[User]:
         """
         List all users in the database.
         """
@@ -50,21 +50,21 @@ class UserPostgresRepository(UserRepositoryInterface):
             users = session.query(UserModel).all()
         return [User.model_validate(user) for user in users]
 
-    def exists_by_cpf(self, cpf: str) -> bool:
+    def _exists_by_cpf(self, cpf: str) -> bool:
         """
         Check if a user exists by their CPF.
         """
         with self.db_session() as session:
             return session.query(UserModel).filter_by(cpf=cpf).count() > 0
 
-    def exists_by_id(self, user_id: int) -> bool:
+    def _exists_by_id(self, user_id: int) -> bool:
         """
         Check if a user exists by their ID.
         """
         with self.db_session() as session:
             return session.query(UserModel).filter_by(id=user_id).count() > 0
 
-    def get_by_cpf(self, cpf: str) -> User | None:
+    def _get_by_cpf(self, cpf: str) -> User | None:
         """
         Fetch a user by their CPF.
         """
@@ -75,7 +75,7 @@ class UserPostgresRepository(UserRepositoryInterface):
         except NoResultFound:
             return None
 
-    def delete_user(self, user_id: int) -> bool:
+    def _delete_user(self, user_id: int) -> bool:
         """
         Delete a user by their ID.
         """
@@ -89,7 +89,7 @@ class UserPostgresRepository(UserRepositoryInterface):
             session.commit()
         return result > 0
 
-    def update_user(self, user_id: int, **kwargs) -> User | None:
+    def _update_user(self, user_id: int, **kwargs) -> User | None:
         """
         Update a user's information by their ID.
         """
