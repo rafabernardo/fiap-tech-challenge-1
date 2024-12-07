@@ -83,7 +83,7 @@ async def get_product_by_id(
 ):
     try:
         product = product_service.get_product_by_id(id)
-    except Exception as e:
+    except Exception:
         print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
@@ -110,7 +110,7 @@ async def register(
     try:
         product = Product(**create_product_request.model_dump())
         product = product_service.register_product(product)
-    except Exception as e:
+    except Exception:
         print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
