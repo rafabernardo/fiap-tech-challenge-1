@@ -1,3 +1,5 @@
+import traceback
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query, Response, status
 
@@ -65,8 +67,9 @@ def list_products(
         )
 
         return paginated_orders
-    except Exception as e:
-        raise Exception(e)
+    except Exception:
+        print(traceback.format_exc())
+        raise InternalServerErrorHTTPException()
 
 
 @router.get("/{id}", response_model=ProductV1Response)
@@ -81,7 +84,7 @@ async def get_product_by_id(
     try:
         product = product_service.get_product_by_id(id)
     except Exception as e:
-        print(e)
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     if not product:
@@ -108,7 +111,7 @@ async def register(
         product = Product(**create_product_request.model_dump())
         product = product_service.register_product(product)
     except Exception as e:
-        print(e)
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_201_CREATED
@@ -137,6 +140,7 @@ async def delete(
     except NoDocumentsFoundException:
         raise NoDocumentsFoundHTTPException()
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_204_NO_CONTENT
@@ -169,4 +173,5 @@ async def update(
     except NoDocumentsFoundException:
         raise NoDocumentsFoundHTTPException()
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()

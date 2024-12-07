@@ -34,32 +34,34 @@ class ProductPostgresRepository(ProductsRepositoryInterface):
     def _list_products(
         self, filter: dict, page: int, page_size: int
     ) -> list[Product]:
+        skip = (page - 1) * page_size
+        query = (
+            select(ProductModel)
+            .filter_by(**filter)
+            .offset(skip)
+            .limit(page_size)
+        )
         with self.db_session() as session:
-            skip = (page - 1) * page_size
-            query = (
-                select(ProductModel)
-                .filter_by(**filter)
-                .offset(skip)
-                .limit(page_size)
-            )
             result = session.execute(query).scalars().all()
         return [Product(**product.__dict__) for product in result]
 
     def _count_products(self, filter: dict) -> int:
+        query = select(ProductModel).filter_by(**filter)
         with self.db_session() as session:
-            query = select(ProductModel).filter_by(**filter)
             result = session.execute(query).scalars().all()
         return len(result)
 
     def _exists_by_id(self, id: str) -> bool:
         query = select(ProductModel).where(ProductModel.id == id)
-        result = self.session.execute(query).scalar_one_or_none()
+        with self.db_session() as session:
+            result = session.execute(query).scalar_one_or_none()
         return result is not None
 
     def _delete_product(self, id: str) -> bool:
         query = delete(ProductModel).where(ProductModel.id == id)
-        result = self.session.execute(query)
-        self.session.commit()
+        with self.db_session() as session:
+            result = session.execute(query)
+            self.session.commit()
         return result.rowcount > 0
 
     def _update_product(self, id: str, **kwargs) -> Product:
@@ -72,8 +74,9 @@ class ProductPostgresRepository(ProductsRepositoryInterface):
             .values(**product_to_update)
             .returning(ProductModel)
         )
-        result = self.session.execute(query).scalar_one_or_none()
-        self.session.commit()
+        with self.db_session() as session:
+            result = session.execute(query).scalar_one_or_none()
+            self.session.commit()
         if result:
             return Product(**result.__dict__)
         return None
