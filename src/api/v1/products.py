@@ -75,7 +75,7 @@ def list_products(
 @router.get("/{id}", response_model=ProductV1Response)
 @inject
 async def get_product_by_id(
-    id: str,
+    id: int,
     response: Response,
     product_service: ProductService = Depends(
         Provide[Container.product_service]
@@ -125,7 +125,7 @@ async def register(
 @router.delete("/{id}")
 @inject
 async def delete(
-    id: str,
+    id: int,
     response: Response,
     product_service: ProductService = Depends(
         Provide[Container.product_service]
@@ -152,7 +152,7 @@ async def delete(
 @router.patch("/{id}", response_model=ProductV1Response)
 @inject
 async def update(
-    id: str,
+    id: int,
     product_request: ProductPatchV1Request,
     response: Response,
     product_service: ProductService = Depends(

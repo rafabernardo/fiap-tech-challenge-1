@@ -20,7 +20,7 @@ class ProductService:
         )
         return paginated_orders
 
-    def get_product_by_id(self, id: str) -> Product | None:
+    def get_product_by_id(self, id: int) -> Product | None:
         product = self.repository.get_by_id(id)
         return product
 
@@ -28,14 +28,14 @@ class ProductService:
         total_products = self.repository.count_products(filter=filter)
         return total_products
 
-    def delete_product(self, id: str) -> bool:
+    def delete_product(self, id: int) -> bool:
         product_exists = self.repository.exists_by_id(id)
         if not product_exists:
             raise NoDocumentsFoundException()
 
         return self.repository.delete_product(id)
 
-    def update_product(self, id: str, **kwargs) -> Product:
+    def update_product(self, id: int, **kwargs) -> Product:
         product = self.repository._exists_by_id(id)
         if not product:
             raise NoDocumentsFoundException()

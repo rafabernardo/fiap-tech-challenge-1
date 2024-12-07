@@ -1,4 +1,6 @@
-from sqlalchemy import delete, update
+from datetime import datetime
+
+from sqlalchemy import delete
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.future import select
 
@@ -61,22 +63,18 @@ class ProductPostgresRepository(ProductsRepositoryInterface):
         query = delete(ProductModel).where(ProductModel.id == id)
         with self.db_session() as session:
             result = session.execute(query)
-            self.session.commit()
+            session.commit()
         return result.rowcount > 0
 
     def _update_product(self, id: str, **kwargs) -> Product:
-        product_to_update = prepare_document_to_db(
-            kwargs, skip_created_at=True
-        )
-        query = (
-            update(ProductModel)
-            .where(ProductModel.id == id)
-            .values(**product_to_update)
-            .returning(ProductModel)
-        )
+        kwargs["updated_at"] = datetime.now()
         with self.db_session() as session:
-            result = session.execute(query).scalar_one_or_none()
-            self.session.commit()
+            result = (
+                session.query(ProductModel)
+                .filter(ProductModel.id == id)
+                .update(kwargs)
+            )
+            session.commit()
         if result:
-            return Product(**result.__dict__)
+            return self.get_by_id(id)
         return None
