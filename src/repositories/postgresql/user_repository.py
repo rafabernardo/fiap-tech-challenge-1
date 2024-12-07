@@ -79,7 +79,7 @@ class UserPostgresRepository:
         Delete a user by their ID.
         """
         with self.db_session() as session:
-            print("adasd")
+            
             result = session.query(UserModel).where(UserModel.id == user_id).delete()
             session.commit()
         return result > 0
