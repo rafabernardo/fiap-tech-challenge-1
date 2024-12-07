@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import UUID, Column, DateTime, Integer, String
+from sqlalchemy import Column, DateTime, Integer, String
 
 from db.postgresql.database import Base
 

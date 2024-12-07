@@ -1,4 +1,5 @@
 from sqlalchemy import delete, update
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.future import select
 
 from db.interfaces.product import ProductsRepositoryInterface
@@ -17,17 +18,18 @@ class ProductPostgresRepository(ProductsRepositoryInterface):
         product_to_db = prepare_document_to_db(product_data)
         new_product = ProductModel(**product_to_db)
         with self.db_session() as session:
-            self.session.add(new_product)
-            self.session.commit()
-            self.session.refresh(new_product)
+            session.add(new_product)
+            session.commit()
+            session.refresh(new_product)
         return Product(**new_product.__dict__)
 
     def _get_by_id(self, id: str) -> Product | None:
-        query = select(ProductModel).where(ProductModel.id == id)
-        result = self.session.execute(query).scalar_one_or_none()
-        if result:
-            return Product(**result.__dict__)
-        return None
+        try:
+            with self.db_session() as session:
+                product = session.query(ProductModel).filter_by(id=id).one()
+                return Product(**product.__dict__)
+        except NoResultFound:
+            return None
 
     def _list_products(
         self, filter: dict, page: int, page_size: int

@@ -80,7 +80,8 @@ async def get_product_by_id(
 ):
     try:
         product = product_service.get_product_by_id(id)
-    except Exception:
+    except Exception as e:
+        print(e)
         raise InternalServerErrorHTTPException()
 
     if not product:
@@ -106,7 +107,8 @@ async def register(
     try:
         product = Product(**create_product_request.model_dump())
         product = product_service.register_product(product)
-    except Exception:
+    except Exception as e:
+        print(e)
         raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_201_CREATED

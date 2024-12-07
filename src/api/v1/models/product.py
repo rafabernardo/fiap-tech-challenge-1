@@ -32,7 +32,7 @@ class ProductPatchV1Request(ProductV1Request):
 
 
 class ProductV1Response(ProductV1Request):
-    id: str
+    id: int
     created_at: datetime
     updated_at: datetime
 
