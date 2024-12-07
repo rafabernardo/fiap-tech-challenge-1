@@ -25,7 +25,7 @@ class ProductPostgresRepository(ProductsRepositoryInterface):
             session.refresh(new_product)
         return Product(**new_product.__dict__)
 
-    def _get_by_id(self, id: str) -> Product | None:
+    def _get_by_id(self, id: int) -> Product | None:
         try:
             with self.db_session() as session:
                 product = session.query(ProductModel).filter_by(id=id).one()
@@ -53,20 +53,20 @@ class ProductPostgresRepository(ProductsRepositoryInterface):
             result = session.execute(query).scalars().all()
         return len(result)
 
-    def _exists_by_id(self, id: str) -> bool:
+    def _exists_by_id(self, id: int) -> bool:
         query = select(ProductModel).where(ProductModel.id == id)
         with self.db_session() as session:
             result = session.execute(query).scalar_one_or_none()
         return result is not None
 
-    def _delete_product(self, id: str) -> bool:
+    def _delete_product(self, id: int) -> bool:
         query = delete(ProductModel).where(ProductModel.id == id)
         with self.db_session() as session:
             result = session.execute(query)
             session.commit()
         return result.rowcount > 0
 
-    def _update_product(self, id: str, **kwargs) -> Product:
+    def _update_product(self, id: int, **kwargs) -> Product:
         kwargs["updated_at"] = datetime.now()
         with self.db_session() as session:
             result = (
