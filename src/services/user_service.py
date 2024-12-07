@@ -43,18 +43,18 @@ class UserService:
         clean_cpf = clean_cpf_to_db(cpf)
         return self.repository.get_by_cpf(clean_cpf)
 
-    def get_user_by_id(self, id: str) -> User | None:
+    def get_user_by_id(self, id: int) -> User | None:
         user = self.repository.get_by_id(id)
         return user
 
-    def delete_user(self, id: str) -> bool:
+    def delete_user(self, id: int) -> bool:
         user_exists = self.repository.exists_by_id(id)
         if not user_exists:
             raise NoDocumentsFoundException()
 
         return self.repository.delete_user(id)
 
-    def identify_user(self, id: str, cpf: str) -> User:
+    def identify_user(self, id: int, cpf: str) -> User:
         user = self.repository.get_by_id(id)
         if not user:
             raise NoDocumentsFoundException()

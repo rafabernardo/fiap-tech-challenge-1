@@ -1,10 +1,13 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class User(BaseModel):
-    id: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int | None = None
     name: str
     email: str
     cpf: str | None = None

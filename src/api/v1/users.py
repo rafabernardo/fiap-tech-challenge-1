@@ -1,3 +1,5 @@
+import traceback
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Response, status
 
@@ -36,6 +38,7 @@ async def list_users(
     try:
         users = user_service.list_users()
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_200_OK
@@ -49,13 +52,14 @@ async def list_users(
 @router.get("/{id}", response_model=UserV1Response)
 @inject
 async def get_user_by_id(
-    id: str,
+    id: int,
     response: Response,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
     try:
         user = user_service.get_user_by_id(id)
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     if not user:
@@ -84,6 +88,7 @@ async def get_user_by_cpf(
             detail=exc.message,
         )
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     if user is None:
@@ -113,6 +118,7 @@ async def register(
     except UserInvalidFormatDataError as exc:
         raise UnprocessableEntityErrorHTTPException(detail=exc.message)
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_201_CREATED
@@ -126,7 +132,7 @@ async def register(
 @router.delete("/delete/{id}")
 @inject
 async def delete(
-    id: str,
+    id: int,
     response: Response,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
@@ -143,13 +149,14 @@ async def delete(
     except NoDocumentsFoundException:
         raise NoDocumentsFoundHTTPException()
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
 
 @router.patch("/identify/{id}", response_model=UserV1Response)
 @inject
 async def identify_user(
-    id: str,
+    id: int,
     identify_user_request: IdentifyUserV1Request,
     response: Response,
     user_service: UserService = Depends(Provide[Container.user_service]),
@@ -175,4 +182,5 @@ async def identify_user(
     except UserAlreadyExistsError as exc:
         raise UnprocessableEntityErrorHTTPException(exc.message)
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()

@@ -19,6 +19,9 @@ clean-up:
 
 start-up: run
 
+alembic-setup:
+	alembic init alembic \
+	&& alembic upgrade head
 
 # Kubernetes
 

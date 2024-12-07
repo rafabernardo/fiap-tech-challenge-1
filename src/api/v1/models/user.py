@@ -10,7 +10,7 @@ class RegisterUserV1Request(BaseModel):
 
 
 class UserV1Response(BaseModel):
-    id: str
+    id: int
     name: str
     email: str
     created_at: datetime

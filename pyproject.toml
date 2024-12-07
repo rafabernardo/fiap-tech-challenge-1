@@ -28,6 +28,9 @@ pydantic-settings = "^2.3.4"
 uvicorn = "^0.30.3"
 pymongo = "4.8.0"
 motor = "^3.5.1"
+sqlalchemy = "^2.0.36"
+psycopg2-binary = "^2.9.10"
+alembic = "^1.14.0" 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3"
