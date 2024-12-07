@@ -70,7 +70,7 @@ class UserPostgresRepository:
         try:
             with self.db_session() as session:
                 user = session.query(UserModel).filter_by(cpf=cpf).one()
-            return self.convert_user_model(user)
+            return User.model_validate(user)
         except NoResultFound:
             return None
 
