@@ -3,9 +3,6 @@ import uuid
 from db.postgresql.database import Base
 from sqlalchemy import UUID, Column, DateTime, String
 
-# from sqlalchemy.ext.declarative import declarative_base
-
-# Base = declarative_base()
 
 
 class UserModel(Base):
