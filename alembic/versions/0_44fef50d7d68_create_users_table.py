@@ -35,6 +35,7 @@ def upgrade() -> None:
         sa.Column("cpf", sa.String, nullable=True),
         sa.Column("created_at", sa.DateTime, nullable=False),
         sa.Column("updated_at", sa.DateTime, nullable=False),
+        sa.PrimaryKeyConstraint("id"),
     )
 
     # Create indexes
