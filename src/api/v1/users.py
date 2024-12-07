@@ -1,5 +1,8 @@
 import traceback
 
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends, Response, status
+
 from api.v1.exceptions.commons import (
     InternalServerErrorHTTPException,
     NoDocumentsFoundHTTPException,
@@ -16,8 +19,6 @@ from core.exceptions.user_exceptions import (
     UserAlreadyExistsError,
     UserInvalidFormatDataError,
 )
-from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Response, status
 from models.user import User
 from services.user_service import UserService
 
@@ -51,7 +52,7 @@ async def list_users(
 @router.get("/{id}", response_model=UserV1Response)
 @inject
 async def get_user_by_id(
-    id: str,
+    id: int,
     response: Response,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
@@ -131,7 +132,7 @@ async def register(
 @router.delete("/delete/{id}")
 @inject
 async def delete(
-    id: str,
+    id: int,
     response: Response,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
@@ -155,7 +156,7 @@ async def delete(
 @router.patch("/identify/{id}", response_model=UserV1Response)
 @inject
 async def identify_user(
-    id: str,
+    id: int,
     identify_user_request: IdentifyUserV1Request,
     response: Response,
     user_service: UserService = Depends(Provide[Container.user_service]),

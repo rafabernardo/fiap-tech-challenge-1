@@ -1,11 +1,11 @@
-import copy
 from datetime import datetime
+
+from sqlalchemy.exc import NoResultFound
 
 from db.postgresql.database import get_postgresql_session
 from db.postgresql.models.user import UserModel
 from models.user import User
 from repositories.utils import prepare_document_to_db
-from sqlalchemy.exc import NoResultFound
 
 
 class UserPostgresRepository:
@@ -27,16 +27,16 @@ class UserPostgresRepository:
             session.add(user_model)
             session.commit()
             session.refresh(user_model)
-        return self.convert_user_model(user_model)
+        return User.model_validate(user_model)
 
-    def get_by_id(self, user_id: str) -> User | None:
+    def get_by_id(self, user_id: int) -> User | None:
         """
         Fetch a user by their ID.
         """
         try:
             with self.db_session() as session:
                 user = session.query(UserModel).filter_by(id=user_id).one()
-            return self.convert_user_model(user)
+            return User.model_validate(user)
 
         except NoResultFound:
             return None
@@ -47,7 +47,7 @@ class UserPostgresRepository:
         """
         with self.db_session() as session:
             users = session.query(UserModel).all()
-        return [self.convert_user_model(user) for user in users]
+        return [User.model_validate(user) for user in users]
 
     def exists_by_cpf(self, cpf: str) -> bool:
         """
@@ -56,7 +56,7 @@ class UserPostgresRepository:
         with self.db_session() as session:
             return session.query(UserModel).filter_by(cpf=cpf).count() > 0
 
-    def exists_by_id(self, user_id: str) -> bool:
+    def exists_by_id(self, user_id: int) -> bool:
         """
         Check if a user exists by their ID.
         """
@@ -74,7 +74,7 @@ class UserPostgresRepository:
         except NoResultFound:
             return None
 
-    def delete_user(self, user_id: str) -> bool:
+    def delete_user(self, user_id: int) -> bool:
         """
         Delete a user by their ID.
         """
@@ -84,7 +84,7 @@ class UserPostgresRepository:
             session.commit()
         return result > 0
 
-    def update_user(self, user_id: str, **kwargs) -> User | None:
+    def update_user(self, user_id: int, **kwargs) -> User | None:
         """
         Update a user's information by their ID.
         """
@@ -103,9 +103,3 @@ class UserPostgresRepository:
         Close the database session.
         """
         self.db_session().close()
-
-    @staticmethod
-    def convert_user_model(user_model: UserModel) -> User:
-        data = copy.deepcopy(user_model.__dict__)
-        data["id"] = str(data["id"])
-        return User.model_validate(data)

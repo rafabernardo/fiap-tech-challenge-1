@@ -7,7 +7,7 @@ class User(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    id: str | None = None
+    id: int | None = None
     name: str
     email: str
     cpf: str | None = None
