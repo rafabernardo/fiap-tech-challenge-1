@@ -2,13 +2,14 @@ from datetime import datetime
 
 from sqlalchemy.exc import NoResultFound
 
+from db.interfaces.user import UserRepositoryInterface
 from db.postgresql.database import get_postgresql_session
 from db.postgresql.models.user import UserModel
 from models.user import User
 from repositories.utils import prepare_document_to_db
 
 
-class UserPostgresRepository:
+class UserPostgresRepository(UserRepositoryInterface):
     def __init__(self):
         """
         Initialize the repository with a database session.
@@ -79,8 +80,12 @@ class UserPostgresRepository:
         Delete a user by their ID.
         """
         with self.db_session() as session:
-            
-            result = session.query(UserModel).where(UserModel.id == user_id).delete()
+
+            result = (
+                session.query(UserModel)
+                .where(UserModel.id == user_id)
+                .delete()
+            )
             session.commit()
         return result > 0
 
@@ -88,11 +93,13 @@ class UserPostgresRepository:
         """
         Update a user's information by their ID.
         """
-        kwargs["updated_at"] = (
-            datetime.now()
-        )
+        kwargs["updated_at"] = datetime.now()
         with self.db_session() as session:
-            result = session.query(UserModel).filter(UserModel.id == user_id).update(kwargs)
+            result = (
+                session.query(UserModel)
+                .filter(UserModel.id == user_id)
+                .update(kwargs)
+            )
             session.commit()
         if result:
             return self.get_by_id(user_id)
