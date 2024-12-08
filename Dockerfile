@@ -7,7 +7,7 @@ RUN pip install poetry==1.8.3
 RUN poetry config virtualenvs.create false
 
 COPY pyproject.toml poetry.lock README.md alembic.ini ./
-COPY alembic/ /fiap-tech-challenge-1/alembic
+COPY alembic/ /fiap-tech-challenge-1/alembic/
 COPY src/ /fiap-tech-challenge-1/src/
 RUN poetry install --no-dev
 
