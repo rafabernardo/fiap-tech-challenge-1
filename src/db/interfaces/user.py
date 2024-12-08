@@ -11,14 +11,14 @@ class UserRepositoryInterface(abc.ABC):
         user = self._add(user)
         return user
 
-    def get_by_id(self, id: str) -> User | None:
+    def get_by_id(self, id: int) -> User | None:
         user = self._get_by_id(id)
         return user
 
     def exists_by_cpf(self, cpf: str) -> bool:
         return self._exists_by_cpf(cpf)
 
-    def exists_by_id(self, id: str) -> bool:
+    def exists_by_id(self, id: int) -> bool:
         return self._exists_by_id(id)
 
     def list_users(self) -> list[User]:
@@ -29,10 +29,10 @@ class UserRepositoryInterface(abc.ABC):
         user = self._get_by_cpf(cpf)
         return user
 
-    def delete_user(self, id: str) -> bool:
+    def delete_user(self, id: int) -> bool:
         return self._delete_user(id)
 
-    def update_user(self, id: str, **kwargs) -> User:
+    def update_user(self, id: int, **kwargs) -> User:
         user = self._update_user(id, **kwargs)
         return user
 
@@ -41,7 +41,7 @@ class UserRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _get_by_id(self, id: str) -> User | None:
+    def _get_by_id(self, id: int) -> User | None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -49,7 +49,7 @@ class UserRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _exists_by_id(self, id: str) -> bool:
+    def _exists_by_id(self, id: int) -> bool:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -61,9 +61,9 @@ class UserRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _delete_user(self, id: str) -> bool:
+    def _delete_user(self, id: int) -> bool:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _update_user(self, id: str, **kwargs) -> User:
+    def _update_user(self, id: int, **kwargs) -> User:
         raise NotImplementedError

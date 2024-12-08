@@ -10,7 +10,7 @@ class ProductsRepositoryInterface(abc.ABC):
         new_product = self._add(product)
         return new_product
 
-    def get_by_id(self, id: str) -> Product | None:
+    def get_by_id(self, id: int) -> Product | None:
         product = self._get_by_id(id)
         return product
 
@@ -26,14 +26,14 @@ class ProductsRepositoryInterface(abc.ABC):
         total_products = self._count_products(filter=filter)
         return total_products
 
-    def delete_product(self, id: str) -> bool:
+    def delete_product(self, id: int) -> bool:
         was_product_deleted = self._delete_product(id=id)
         return was_product_deleted
 
-    def exists_by_id(self, id: str) -> bool:
+    def exists_by_id(self, id: int) -> bool:
         return self._exists_by_id(id)
 
-    def update_product(self, id: str, **kwargs) -> Product:
+    def update_product(self, id: int, **kwargs) -> Product:
         product = self._update_product(id, **kwargs)
         return product
 
@@ -42,7 +42,7 @@ class ProductsRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _get_by_id(self, id: str) -> Product | None:
+    def _get_by_id(self, id: int) -> Product | None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -56,13 +56,13 @@ class ProductsRepositoryInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _delete_product(self, id: str) -> bool:
+    def _delete_product(self, id: int) -> bool:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _exists_by_id(self, id: str) -> bool:
+    def _exists_by_id(self, id: int) -> bool:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _update_product(self, id: str, **kwargs) -> Product:
+    def _update_product(self, id: int, **kwargs) -> Product:
         raise NotImplementedError

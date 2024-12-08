@@ -1,3 +1,5 @@
+import traceback
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query, Response, status
 
@@ -66,13 +68,14 @@ def list_products(
 
         return paginated_orders
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
 
 @router.get("/{id}", response_model=ProductV1Response)
 @inject
 async def get_product_by_id(
-    id: str,
+    id: int,
     response: Response,
     product_service: ProductService = Depends(
         Provide[Container.product_service]
@@ -81,6 +84,7 @@ async def get_product_by_id(
     try:
         product = product_service.get_product_by_id(id)
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     if not product:
@@ -107,6 +111,7 @@ async def register(
         product = Product(**create_product_request.model_dump())
         product = product_service.register_product(product)
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_201_CREATED
@@ -120,7 +125,7 @@ async def register(
 @router.delete("/{id}")
 @inject
 async def delete(
-    id: str,
+    id: int,
     response: Response,
     product_service: ProductService = Depends(
         Provide[Container.product_service]
@@ -135,6 +140,7 @@ async def delete(
     except NoDocumentsFoundException:
         raise NoDocumentsFoundHTTPException()
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_204_NO_CONTENT
@@ -146,7 +152,7 @@ async def delete(
 @router.patch("/{id}", response_model=ProductV1Response)
 @inject
 async def update(
-    id: str,
+    id: int,
     product_request: ProductPatchV1Request,
     response: Response,
     product_service: ProductService = Depends(
@@ -167,4 +173,5 @@ async def update(
     except NoDocumentsFoundException:
         raise NoDocumentsFoundHTTPException()
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()

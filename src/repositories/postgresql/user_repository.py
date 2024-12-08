@@ -2,13 +2,14 @@ from datetime import datetime
 
 from sqlalchemy.exc import NoResultFound
 
+from db.interfaces.user import UserRepositoryInterface
 from db.postgresql.database import get_postgresql_session
 from db.postgresql.models.user import UserModel
 from models.user import User
 from repositories.utils import prepare_document_to_db
 
 
-class UserPostgresRepository:
+class UserPostgresRepository(UserRepositoryInterface):
     def __init__(self):
         """
         Initialize the repository with a database session.
@@ -16,7 +17,7 @@ class UserPostgresRepository:
         """
         self.db_session = get_postgresql_session
 
-    def add(self, user: User) -> User:
+    def _add(self, user: User) -> User:
         """
         Add a new user to the database.
         """
@@ -29,7 +30,7 @@ class UserPostgresRepository:
             session.refresh(user_model)
         return User.model_validate(user_model)
 
-    def get_by_id(self, user_id: int) -> User | None:
+    def _get_by_id(self, user_id: int) -> User | None:
         """
         Fetch a user by their ID.
         """
@@ -41,7 +42,7 @@ class UserPostgresRepository:
         except NoResultFound:
             return None
 
-    def list_users(self) -> list[User]:
+    def _list_users(self) -> list[User]:
         """
         List all users in the database.
         """
@@ -49,21 +50,21 @@ class UserPostgresRepository:
             users = session.query(UserModel).all()
         return [User.model_validate(user) for user in users]
 
-    def exists_by_cpf(self, cpf: str) -> bool:
+    def _exists_by_cpf(self, cpf: str) -> bool:
         """
         Check if a user exists by their CPF.
         """
         with self.db_session() as session:
             return session.query(UserModel).filter_by(cpf=cpf).count() > 0
 
-    def exists_by_id(self, user_id: int) -> bool:
+    def _exists_by_id(self, user_id: int) -> bool:
         """
         Check if a user exists by their ID.
         """
         with self.db_session() as session:
             return session.query(UserModel).filter_by(id=user_id).count() > 0
 
-    def get_by_cpf(self, cpf: str) -> User | None:
+    def _get_by_cpf(self, cpf: str) -> User | None:
         """
         Fetch a user by their CPF.
         """
@@ -74,25 +75,31 @@ class UserPostgresRepository:
         except NoResultFound:
             return None
 
-    def delete_user(self, user_id: int) -> bool:
+    def _delete_user(self, user_id: int) -> bool:
         """
         Delete a user by their ID.
         """
         with self.db_session() as session:
-            
-            result = session.query(UserModel).where(UserModel.id == user_id).delete()
+
+            result = (
+                session.query(UserModel)
+                .where(UserModel.id == user_id)
+                .delete()
+            )
             session.commit()
         return result > 0
 
-    def update_user(self, user_id: int, **kwargs) -> User | None:
+    def _update_user(self, user_id: int, **kwargs) -> User | None:
         """
         Update a user's information by their ID.
         """
-        kwargs["updated_at"] = (
-            datetime.now()
-        )
+        kwargs["updated_at"] = datetime.now()
         with self.db_session() as session:
-            result = session.query(UserModel).filter(UserModel.id == user_id).update(kwargs)
+            result = (
+                session.query(UserModel)
+                .filter(UserModel.id == user_id)
+                .update(kwargs)
+            )
             session.commit()
         if result:
             return self.get_by_id(user_id)

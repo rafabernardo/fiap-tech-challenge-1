@@ -12,7 +12,7 @@ class Category(Enum):
 
 
 class Product(BaseModel):
-    id: str | None = None
+    id: int | None = None
     name: str
     category: str
     price: int

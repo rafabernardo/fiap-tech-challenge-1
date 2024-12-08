@@ -5,7 +5,7 @@ from core.exceptions.commons_exceptions import (
     DataConflictException,
     NoDocumentsFoundException,
 )
-from db.mongodb.interfaces.order import OrderRepositoryInterface
+from db.interfaces.order import OrderRepositoryInterface
 from models.order import (
     Order,
     OrderFilter,

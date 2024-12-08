@@ -1,7 +1,10 @@
 from dependency_injector import containers, providers
+
 from repositories.order_repository import OrderMongoRepository
+from repositories.postgresql.product_repository import (
+    ProductPostgresRepository,
+)
 from repositories.postgresql.user_repository import UserPostgresRepository
-from repositories.product_repository import ProductMongoRepository
 from repositories.queue_repository import QueueMongoRepository
 from services.order_service import OrderService
 from services.product_service import ProductService
@@ -20,7 +23,7 @@ class Container(containers.DeclarativeContainer):
     order_repository = providers.Factory(OrderMongoRepository)
     order_service = providers.Factory(OrderService, order_repository)
 
-    product_repository = providers.Factory(ProductMongoRepository)
+    product_repository = providers.Factory(ProductPostgresRepository)
     product_service = providers.Factory(ProductService, product_repository)
 
     queue_repository = providers.Factory(QueueMongoRepository)

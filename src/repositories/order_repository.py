@@ -1,8 +1,8 @@
 from bson import ObjectId
 from pymongo import ReturnDocument
 
+from db.interfaces.order import OrderRepositoryInterface
 from db.mongodb.database import get_mongo_database
-from db.mongodb.interfaces.order import OrderRepositoryInterface
 from models.order import Order, OrderFilter, OrderItem
 from repositories.utils import prepare_document_to_db, replace_id_key
 
