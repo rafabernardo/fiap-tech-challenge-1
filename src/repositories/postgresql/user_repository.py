@@ -1,12 +1,11 @@
 from datetime import datetime
 
-from sqlalchemy.exc import NoResultFound
-
 from db.interfaces.user import UserRepositoryInterface
 from db.postgresql.database import get_postgresql_session
 from db.postgresql.models.user import UserModel
 from models.user import User
 from repositories.utils import prepare_document_to_db
+from sqlalchemy.exc import NoResultFound
 
 
 class UserPostgresRepository(UserRepositoryInterface):
