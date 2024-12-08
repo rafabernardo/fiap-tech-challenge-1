@@ -3,7 +3,7 @@ name: Terraform
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   terraform:
