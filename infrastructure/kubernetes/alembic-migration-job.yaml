@@ -1,35 +1,14 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: fiap-soat
-  labels:
-    app: fiap-soat
+  name: alembic-migration-job
 spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: fiap-soat
   template:
-    metadata:
-      labels:
-        app: fiap-soat
     spec:
       containers:
-        - name: fiap-soat
+        - name: alembic-migration
           image: local:image
-          imagePullPolicy: Never
-          ports:
-            - containerPort: 80
-              name: http
-          resources:
-            limits:
-              cpu: "200m"
-              memory: "250Mi"
-            requests:
-              cpu: "100m"
-              memory: "150Mi"
-          # command:
-          #   ["uvicorn", "src.api.app:app", "--host", "0.0.0.0", "--port", "80"]
+          command: ["alembic", "upgrade", "head"]
           env:
             - name: API_PORT
               value: "80"
@@ -68,11 +47,6 @@ spec:
                 configMapKeyRef:
                   name: env-config
                   key: POSTGRESQL_DATABASE
-            - name: POSTGRESQL_URI
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: POSTGRESQL_URI
             - name: POSTGRESQL_URL
               valueFrom:
                 configMapKeyRef:
@@ -90,3 +64,9 @@ spec:
                   key: POSTGRESQL_PASSWORD
             - name: POSTGRESQL_PORT
               value: "5432"
+            - name: POSTGRESQL_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: env-config
+                  key: POSTGRESQL_URI
+      restartPolicy: OnFailure

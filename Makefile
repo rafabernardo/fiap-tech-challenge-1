@@ -73,3 +73,6 @@ k-apply-patch-metric-svc:
 
 docker-build-local-image:
 	docker build -t local:image .
+
+k-apply-alembic-migration:
+	kubectl apply -f infrastructure/kubernetes/alembic-migration-job.yaml
