@@ -1,8 +1,5 @@
-import uuid
-
-from sqlalchemy import Column, DateTime, Integer, String
-
 from db.postgresql.database import Base
+from sqlalchemy import Column, DateTime, Integer, String
 
 
 class ProductModel(Base):
