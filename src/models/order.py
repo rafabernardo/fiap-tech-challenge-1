@@ -1,9 +1,8 @@
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, field_validator
-
 from models.product import Product
+from pydantic import BaseModel, field_validator
 
 
 class Status(Enum):
@@ -38,7 +37,7 @@ class Order(BaseModel):
     created_at: datetime | None = None
     updated_at: datetime | None = None
     order_number: int | None = None
-    owner_id: str | None = None
+    owner_id: int | None = None
     payment_status: str  # PaymentStatus
     paid_at: datetime | None = None
     total_price: int
