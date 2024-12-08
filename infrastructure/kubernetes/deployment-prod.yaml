@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fiap-soad
+  name: fiap-soat
   labels:
-    app: fiap-soad
+    app: fiap-soat
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: fiap-soad
+      app: fiap-soat
   template:
     metadata:
       labels:
-        app: fiap-soad
+        app: fiap-soat
     spec:
       containers:
-        - name: fiap-soad
+        - name: fiap-soat
           image: alceuramos/dev:latest
           ports:
             - containerPort: 80

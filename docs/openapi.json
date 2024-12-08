@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "/fiap-soad"
+      "url": "/fiap-soat"
     }
   ],
   "paths": {
@@ -19,9 +19,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  
-                }
+                "schema": {}
               }
             }
           }
@@ -30,9 +28,7 @@
     },
     "/v1/users": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "List Users",
         "operationId": "list_users_v1_users_get",
         "responses": {
@@ -55,9 +51,7 @@
     },
     "/v1/users/{id}": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get User By Id",
         "operationId": "get_user_by_id_v1_users__id__get",
         "parameters": [
@@ -97,9 +91,7 @@
     },
     "/v1/users/cpf/{cpf}": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get User By Cpf",
         "operationId": "get_user_by_cpf_v1_users_cpf__cpf__get",
         "parameters": [
@@ -139,9 +131,7 @@
     },
     "/v1/users/register": {
       "post": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Register",
         "operationId": "register_v1_users_register_post",
         "requestBody": {
@@ -180,9 +170,7 @@
     },
     "/v1/users/delete/{id}": {
       "delete": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Delete",
         "operationId": "delete_v1_users_delete__id__delete",
         "parameters": [
@@ -201,9 +189,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  
-                }
+                "schema": {}
               }
             }
           },
@@ -222,9 +208,7 @@
     },
     "/v1/users/identify/{id}": {
       "patch": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Identify User",
         "operationId": "identify_user_v1_users_identify__id__patch",
         "parameters": [
@@ -274,9 +258,7 @@
     },
     "/v1/products/": {
       "get": {
-        "tags": [
-          "Products"
-        ],
+        "tags": ["Products"],
         "summary": "List Products",
         "operationId": "list_products_v1_products__get",
         "parameters": [
@@ -343,9 +325,7 @@
     },
     "/v1/products/{id}": {
       "get": {
-        "tags": [
-          "Products"
-        ],
+        "tags": ["Products"],
         "summary": "Get Product By Id",
         "operationId": "get_product_by_id_v1_products__id__get",
         "parameters": [
@@ -383,9 +363,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Products"
-        ],
+        "tags": ["Products"],
         "summary": "Delete",
         "operationId": "delete_v1_products__id__delete",
         "parameters": [
@@ -404,9 +382,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  
-                }
+                "schema": {}
               }
             }
           },
@@ -423,9 +399,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Products"
-        ],
+        "tags": ["Products"],
         "summary": "Update",
         "operationId": "update_v1_products__id__patch",
         "parameters": [
@@ -475,9 +449,7 @@
     },
     "/v1/products": {
       "post": {
-        "tags": [
-          "Products"
-        ],
+        "tags": ["Products"],
         "summary": "Register",
         "operationId": "register_v1_products_post",
         "requestBody": {
@@ -516,9 +488,7 @@
     },
     "/v1/order/queue": {
       "get": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "List Queue Items",
         "operationId": "list_queue_items_v1_order_queue_get",
         "parameters": [
@@ -572,9 +542,7 @@
     },
     "/v1/order": {
       "get": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "List Orders",
         "operationId": "list_orders_v1_order_get",
         "parameters": [
@@ -638,9 +606,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "Register",
         "operationId": "register_v1_order_post",
         "requestBody": {
@@ -679,9 +645,7 @@
     },
     "/v1/order/{id}": {
       "get": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "Get Order By Id",
         "operationId": "get_order_by_id_v1_order__id__get",
         "parameters": [
@@ -719,9 +683,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "Delete",
         "operationId": "delete_v1_order__id__delete",
         "parameters": [
@@ -740,9 +702,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  
-                }
+                "schema": {}
               }
             }
           },
@@ -759,9 +719,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "Update",
         "operationId": "update_v1_order__id__patch",
         "parameters": [
@@ -811,9 +769,7 @@
     },
     "/v1/order/fake-checkout/{order_id}": {
       "patch": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "Set Payment Status",
         "operationId": "set_payment_status_v1_order_fake_checkout__order_id__patch",
         "parameters": [
@@ -842,9 +798,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  
-                }
+                "schema": {}
               }
             }
           },
@@ -863,9 +817,7 @@
     },
     "/v1/order/get_payment_status/{order_id}": {
       "get": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "Get Payment Status",
         "operationId": "get_payment_status_v1_order_get_payment_status__order_id__get",
         "parameters": [
@@ -905,9 +857,7 @@
     },
     "/v1/order/display-orders/": {
       "get": {
-        "tags": [
-          "Orders"
-        ],
+        "tags": ["Orders"],
         "summary": "List Orders",
         "operationId": "list_orders_v1_order_display_orders__get",
         "parameters": [
@@ -964,12 +914,7 @@
     "schemas": {
       "Category": {
         "type": "string",
-        "enum": [
-          "meal",
-          "side-dish",
-          "beverage",
-          "dessert"
-        ],
+        "enum": ["meal", "side-dish", "beverage", "dessert"],
         "title": "Category"
       },
       "HTTPValidationError": {
@@ -993,9 +938,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "cpf"
-        ],
+        "required": ["cpf"],
         "title": "IdentifyUserV1Request"
       },
       "ListOrderV1Response": {
@@ -1232,10 +1175,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "product_id",
-          "quantity"
-        ],
+        "required": ["product_id", "quantity"],
         "title": "OrderItemV1Request"
       },
       "OrderItemV1Response": {
@@ -1253,11 +1193,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "product",
-          "quantity",
-          "price"
-        ],
+        "required": ["product", "quantity", "price"],
         "title": "OrderItemV1Response"
       },
       "OrderPatchV1Request": {
@@ -1394,12 +1330,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "status",
-          "products",
-          "payment_status",
-          "total_price"
-        ],
+        "required": ["status", "products", "payment_status", "total_price"],
         "title": "OrderV1Response"
       },
       "PatchPaymentResultV1Request": {
@@ -1410,9 +1341,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "result"
-        ],
+        "required": ["result"],
         "title": "PatchPaymentResultV1Request"
       },
       "PaymentStatusV1Response": {
@@ -1517,13 +1446,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "category",
-          "price",
-          "description",
-          "image"
-        ],
+        "required": ["name", "category", "price", "description", "image"],
         "title": "ProductV1Request"
       },
       "ProductV1Response": {
@@ -1593,11 +1516,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "created_at",
-          "order_id"
-        ],
+        "required": ["id", "created_at", "order_id"],
         "title": "QueueItemV1Response"
       },
       "RegisterOrderV1Request": {
@@ -1622,9 +1541,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "products"
-        ],
+        "required": ["products"],
         "title": "RegisterOrderV1Request"
       },
       "RegisterOrderV1Response": {
@@ -1718,12 +1635,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "status",
-          "products",
-          "payment_status",
-          "total_price"
-        ],
+        "required": ["status", "products", "payment_status", "total_price"],
         "title": "RegisterOrderV1Response"
       },
       "RegisterUserV1Request": {
@@ -1749,10 +1661,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "email"
-        ],
+        "required": ["name", "email"],
         "title": "RegisterUserV1Request"
       },
       "Status": {
@@ -1795,13 +1704,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "email",
-          "created_at",
-          "updated_at"
-        ],
+        "required": ["id", "name", "email", "created_at", "updated_at"],
         "title": "UserV1Response"
       },
       "ValidationError": {
@@ -1830,11 +1733,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       }
     }

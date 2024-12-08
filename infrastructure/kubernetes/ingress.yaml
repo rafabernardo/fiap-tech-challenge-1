@@ -8,10 +8,10 @@ spec:
   rules:
     - http:
         paths:
-          - pathType: Prefix
-            path: /fiap-soad/?(.*)
+          - pathType: ImplementationSpecific
+            path: /fiap-soat/(.*)
             backend:
               service:
-                name: fiap-soad-service
+                name: fiap-soat-service
                 port:
                   number: 80
