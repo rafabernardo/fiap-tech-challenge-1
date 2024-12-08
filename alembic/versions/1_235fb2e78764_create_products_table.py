@@ -36,17 +36,8 @@ def upgrade() -> None:
         sa.Column("image", sa.String, nullable=False),
         sa.Column("created_at", sa.DateTime, nullable=False),
         sa.Column("updated_at", sa.DateTime, nullable=False),
-        sa.PrimaryKeyConstraint("id"),
     )
-
-    # Create indexes
-    op.create_index("ix_products_id", "products", ["id"], unique=False)
-    op.create_index("ix_products_name", "products", ["name"], unique=False)
-    op.create_index("ix_products_category", "products", ["category"], unique=False)
 
 
 def downgrade() -> None:
-    op.drop_index("ix_products_id", table_name="products")
-    op.drop_index("ix_products_name", table_name="products")
-    op.drop_index("ix_products_category", table_name="products")
     op.drop_table("products")

@@ -24,31 +24,15 @@ def upgrade() -> None:
     op.create_table(
         "users",
         sa.Column(
-            "id",
-            sa.Integer,
-            autoincrement=True,
-            nullable=False,
-            primary_key=True,
+            "id", sa.Integer, autoincrement=True, nullable=False, primary_key=True
         ),
         sa.Column("name", sa.String, nullable=False),
         sa.Column("email", sa.String, nullable=False),
         sa.Column("cpf", sa.String, nullable=True),
         sa.Column("created_at", sa.DateTime, nullable=False),
         sa.Column("updated_at", sa.DateTime, nullable=False),
-        sa.PrimaryKeyConstraint("id"),
     )
-
-    # Create indexes
-    op.create_index("ix_users_id", "users", ["id"], unique=False)
-    op.create_index("ix_users_name", "users", ["name"], unique=False)
-    op.create_index("ix_users_cpf", "users", ["cpf"], unique=False)
 
 
 def downgrade() -> None:
-    # Drop indexes
-    op.drop_index("ix_users_cpf", table_name="users")
-    op.drop_index("ix_users_name", table_name="users")
-    op.drop_index("ix_users_id", table_name="users")
-
-    # Drop the 'users' table
     op.drop_table("users")
