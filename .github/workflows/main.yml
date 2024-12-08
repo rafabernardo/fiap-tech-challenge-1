@@ -3,7 +3,7 @@ name: Terraform
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   terraform:
@@ -32,7 +32,7 @@ jobs:
         working-directory: ./terraform
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/dev'
+        if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve
         working-directory: ./terraform
 
