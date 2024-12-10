@@ -1,29 +1,4 @@
 services:
-  mongodb:
-    image: mongo
-    restart: always
-    ports:
-      - 27017:${MONGO_PORT}
-    volumes:
-      - mongodb_data:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_PASSWORD}
-      ME_CONFIG_MONGODB_SERVER: mongodb
-      ME_CONFIG_MONGODB_PORT: ${MONGO_PORT}
-      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USERNAME}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
-    depends_on:
-      - mongodb
   app:
     build:
       context: .
@@ -33,8 +8,12 @@ services:
     env_file:
       - .env
     depends_on:
-      - mongodb
-  
+      postgres:
+        condition: service_healthy
+        restart: true
+    command: >
+      sh -c "alembic upgrade head && uvicorn src.api.app:app --host 0.0.0.0 --port ${API_PORT}"
+
   postgres:
     image: postgres:15
     container_name: postgres_container
@@ -47,7 +26,16 @@ services:
       - "${POSTGRESQL_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRESQL_USERNAME} -d ${POSTGRESQL_DATABASE}",
+        ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
 
 volumes:
-  mongodb_data:
   postgres_data:
