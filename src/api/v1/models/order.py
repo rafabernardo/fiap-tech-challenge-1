@@ -4,7 +4,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from api.v1.models.page import PageV1Response
 from api.v1.models.product import ProductV1Response
-from api.v1.models.user import UserV1Response
 
 
 class OrderItemV1Request(BaseModel):
@@ -24,8 +23,8 @@ class OrderItemV1Response(BaseModel):
 
 
 class OrderV1Response(BaseModel):
-    id: str | None = None
-    owner: UserV1Response | None = None
+    id: int = None
+    owner_id: int
 
     order_number: int | None = None
     status: str
