@@ -1,26 +1,56 @@
+from sqlalchemy import delete, func, insert, update
+from sqlalchemy.future import select
+
 from core.exceptions.commons_exceptions import DataConflictException
 from db.interfaces.order import OrderRepositoryInterface
 from db.postgresql.database import get_postgresql_session
 from db.postgresql.models.order import OrderModel
 from db.postgresql.models.order_product import OrderProductModel
 from models.order import Order, OrderFilter, OrderItem
-from sqlalchemy import delete, func, insert, update
-from sqlalchemy.future import select
+from repositories.utils import prepare_document_to_db
 
 
 class OrderPostgresRepository(OrderRepositoryInterface):
     def __init__(self):
         self.db_session = get_postgresql_session
 
-    def _add(self, order: Order):
+    def _add(self, order: Order) -> Order:
         with self.db_session() as session:
             db_order = session.execute(
                 select(OrderModel).where(OrderModel.id == order.id)
-            )
+            ).first()
             if db_order:
                 raise DataConflictException("Order already exists")
-            session.execute(insert(OrderModel).values(**order.model_dump()))
+            order_data = order.model_dump()
+            order_data_to_db = prepare_document_to_db(order_data)
+            new_order = OrderModel(
+                status=order_data_to_db["status"],
+                created_at=order_data_to_db["created_at"],
+                updated_at=order_data_to_db["updated_at"],
+                order_number=order_data_to_db["order_number"],
+                owner_id=order_data_to_db["owner_id"],
+                payment_status=order_data_to_db["payment_status"],
+                paid_at=order_data_to_db["paid_at"],
+                total_price=order_data_to_db["total_price"],
+            )
+            session.add(new_order)
             session.commit()
+            session.refresh(new_order)
+
+            for product in order.products:
+                order_product = OrderProductModel(
+                    order_id=new_order.id,
+                    product_id=product.product.id,
+                    quantity=product.quantity,
+                    price=product.price,
+                )
+                session.add(order_product)
+
+            session.commit()
+            order.id = new_order.id
+            order.updated_at = new_order.updated_at
+            order.created_at = new_order.created_at
+            return order
 
     def _get_by_id(self, id: str) -> Order | None:
         with self.db_session() as session:
@@ -40,8 +70,14 @@ class OrderPostgresRepository(OrderRepositoryInterface):
                 query = query.where(OrderModel.status.in_(order_filter.status))
             if sort:
                 query = query.order_by(
-                    *[getattr(OrderModel, key).asc() for key in sort.get("asc", [])],
-                    *[getattr(OrderModel, key).desc() for key in sort.get("desc", [])],
+                    *[
+                        getattr(OrderModel, key).asc()
+                        for key in sort.get("asc", [])
+                    ],
+                    *[
+                        getattr(OrderModel, key).desc()
+                        for key in sort.get("desc", [])
+                    ],
                 )
             query = query.offset(page * page_size).limit(page_size)
             db_orders = session.execute(query).scalars().all()
@@ -52,9 +88,7 @@ class OrderPostgresRepository(OrderRepositoryInterface):
             query = (
                 select(func.count())
                 .select_from(OrderModel)
-                .where(
-                    OrderModel.status == order_filter.status
-                )
+                .where(OrderModel.status == order_filter.status)
             )
             result = session.execute(query).scalar()
         return result
@@ -74,7 +108,9 @@ class OrderPostgresRepository(OrderRepositoryInterface):
     def _exists_by_id(self, id: str) -> bool:
         with self.db_session() as session:
             result = session.scalar(
-                select(func.count()).select_from(OrderModel).where(OrderModel.id == id)
+                select(func.count())
+                .select_from(OrderModel)
+                .where(OrderModel.id == id)
             )
         return bool(result)
 
@@ -91,8 +127,11 @@ class OrderPostgresRepository(OrderRepositoryInterface):
 
     def _list_order_items_by_order_id(self, id: str) -> list[OrderItem]:
         with self.db_session() as session:
-            query = select(OrderProductModel).where(OrderProductModel.order_id == id)
+            query = select(OrderProductModel).where(
+                OrderProductModel.order_id == id
+            )
             db_order_items = session.execute(query)
         return [
-            OrderItem.model_validate(db_order_item) for db_order_item in db_order_items
+            OrderItem.model_validate(db_order_item)
+            for db_order_item in db_order_items
         ]

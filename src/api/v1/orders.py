@@ -1,3 +1,5 @@
+import traceback
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query, Response, status
 
@@ -181,9 +183,12 @@ async def register(
         )
 
         created_order = order_service.register_order(order)
+
     except NoDocumentsFoundException as exc:
+        print(traceback.format_exc())
         raise NoDocumentsFoundHTTPException(exc.message)
     except Exception:
+        print(traceback.format_exc())
         raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_201_CREATED
