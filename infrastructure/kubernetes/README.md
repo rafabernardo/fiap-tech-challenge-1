@@ -124,6 +124,14 @@ Este guia irá orientá-lo no processo de criação de um cluster Kubernetes e n
 
     **Descrição**: Este comando aplica um patch na configuração do Servidor de Métricas para garantir que ele funcione corretamente com o cluster Kubernetes.
 
+15. **Aplicar migration com Alembic**
+
+    ```sh
+      make k-apply-migration
+    ```
+
+    **Descrição**: Este comando aplica a migration no banco de dados.
+
 ### Conclusão
 
 Seguindo esses passos, você terá um cluster Kubernetes totalmente funcional com sua aplicação implantada e configurada. Cada comando desempenha um papel crucial na configuração do ambiente, implantação da aplicação e garantia de que ela funcione sem problemas.
