@@ -53,7 +53,7 @@ class OrderRepositoryInterface(abc.ABC):
         return order_items
 
     @abc.abstractmethod
-    def _add(self, order: Order) -> None:
+    def _add(self, order: Order) -> Order:
         raise NotImplementedError
 
     @abc.abstractmethod

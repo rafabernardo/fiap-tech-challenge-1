@@ -26,19 +26,19 @@ class PaymentStatus(Enum):
 
 
 class OrderItem(BaseModel):
-    product: Product
+    product_id: int
     quantity: int
     price: int
 
 
 class Order(BaseModel):
-    id: str | None = None
+    id: int | None = None
     status: str  # Status
     products: list[OrderItem]
     created_at: datetime | None = None
     updated_at: datetime | None = None
     order_number: int | None = None
-    owner_id: str | None = None
+    owner_id: int | None = None
     payment_status: str  # PaymentStatus
     paid_at: datetime | None = None
     total_price: int
