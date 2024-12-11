@@ -1,18 +1,16 @@
 from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy.orm import relationship
 
 from db.postgresql.database import Base
 
 
+# OrderProductModel
 class OrderProductModel(Base):
     __tablename__ = "orders_products"
-    __table_args__ = {"extend_existing": True}
+    order_id = Column(Integer, ForeignKey("orders.id"), primary_key=True)
+    product_id = Column(Integer, ForeignKey("products.id"), primary_key=True)
+    quantity = Column(Integer)
+    price = Column(Integer)
 
-    id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(
-        Integer, ForeignKey("orders.id"), nullable=False, index=True
-    )
-    product_id = Column(
-        Integer, ForeignKey("products.id"), nullable=False, index=True
-    )
-    quantity = Column(Integer, nullable=False)
-    price = Column(Integer, nullable=False)
+    order = relationship("OrderModel", back_populates="order_products")
+    product = relationship("ProductModel", back_populates="order_products")

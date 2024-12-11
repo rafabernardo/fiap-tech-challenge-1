@@ -81,32 +81,35 @@ async def list_orders(
     order_service: OrderService = Depends(Provide[Container.order_service]),
     user_service: UserService = Depends(Provide[Container.user_service]),
 ) -> ListOrderV1Response:
+    try:
+        orders_filter = OrderFilter(status=order_status)
 
-    orders_filter = OrderFilter(status=order_status)
-
-    orders = order_service.list_orders(
-        order_filter=orders_filter, page=page, page_size=page_size
-    )
-    total_orders = order_service.count_orders(order_filter=orders_filter)
-
-    pagination_info = get_pagination_info(
-        total_results=total_orders, page=page, page_size=page_size
-    )
-    listed_orders = []
-    for order in orders:
-        owner_data = (
-            user_service.get_user_by_id(order.owner_id).model_dump()
-            if order.owner_id
-            else None
+        orders = order_service.list_orders(
+            order_filter=orders_filter, page=page, page_size=page_size
         )
-        order_response = OrderV1Response(
-            **order.model_dump(), owner=owner_data
-        )
-        listed_orders.append(order_response)
+        total_orders = order_service.count_orders(order_filter=orders_filter)
 
-    paginated_orders = ListOrderV1Response(
-        **pagination_info.model_dump(), results=listed_orders
-    )
+        pagination_info = get_pagination_info(
+            total_results=total_orders, page=page, page_size=page_size
+        )
+        listed_orders = []
+        for order in orders:
+            owner_data = (
+                user_service.get_user_by_id(order.owner_id).model_dump()
+                if order.owner_id
+                else None
+            )
+            order_response = OrderV1Response(
+                **order.model_dump(), owner=owner_data
+            )
+            listed_orders.append(order_response)
+
+        paginated_orders = ListOrderV1Response(
+            **pagination_info.model_dump(), results=listed_orders
+        )
+    except Exception:
+        print(traceback.format_exc())
+        raise InternalServerErrorHTTPException()
 
     response.status_code = status.HTTP_200_OK
     response.headers[HEADER_CONTENT_TYPE] = (
@@ -172,7 +175,7 @@ async def register(
             price = product.quantity * found_product.price
             products_data.append(
                 OrderItemV1Response(
-                    product=found_product.model_dump(),
+                    product_id=product.product_id,
                     quantity=product.quantity,
                     price=price,
                 ).model_dump()

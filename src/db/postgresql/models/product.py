@@ -1,5 +1,7 @@
-from db.postgresql.database import Base
 from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy.orm import relationship
+
+from db.postgresql.database import Base
 
 
 class ProductModel(Base):
@@ -14,3 +16,8 @@ class ProductModel(Base):
     image = Column(String, nullable=False)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
+
+    order_products = relationship(
+        "OrderProductModel",
+        back_populates="product",
+    )

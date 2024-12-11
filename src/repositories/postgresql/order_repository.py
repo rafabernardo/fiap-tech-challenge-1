@@ -1,11 +1,13 @@
 from sqlalchemy import delete, func, insert, update
 from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
 
 from core.exceptions.commons_exceptions import DataConflictException
 from db.interfaces.order import OrderRepositoryInterface
 from db.postgresql.database import get_postgresql_session
 from db.postgresql.models.order import OrderModel
 from db.postgresql.models.order_product import OrderProductModel
+from db.postgresql.models.product import ProductModel
 from models.order import Order, OrderFilter, OrderItem
 from repositories.utils import prepare_document_to_db
 
@@ -37,12 +39,12 @@ class OrderPostgresRepository(OrderRepositoryInterface):
             session.commit()
             session.refresh(new_order)
 
-            for product in order.products:
+            for order_product in order.products:
                 order_product = OrderProductModel(
                     order_id=new_order.id,
-                    product_id=product.product.id,
-                    quantity=product.quantity,
-                    price=product.price,
+                    product_id=order_product.product_id,
+                    quantity=order_product.quantity,
+                    price=order_product.price,
                 )
                 session.add(order_product)
 
@@ -65,23 +67,55 @@ class OrderPostgresRepository(OrderRepositoryInterface):
         self, order_filter: OrderFilter, page: int, page_size: int, sort: dict
     ) -> list[Order]:
         with self.db_session() as session:
-            query = select(OrderModel)
+            query = (
+                session.query(OrderModel)
+                .join(
+                    OrderProductModel,
+                    OrderModel.id == OrderProductModel.order_id,
+                )
+                .options(
+                    joinedload(OrderModel.order_products).joinedload(
+                        OrderProductModel.product
+                    )
+                )
+            )
             if order_filter.status:
                 query = query.where(OrderModel.status.in_(order_filter.status))
-            if sort:
-                query = query.order_by(
-                    *[
-                        getattr(OrderModel, key).asc()
-                        for key in sort.get("asc", [])
-                    ],
-                    *[
-                        getattr(OrderModel, key).desc()
-                        for key in sort.get("desc", [])
-                    ],
+            # if sort:
+            #     for key, direction in sort.items():
+            #         if direction == "asc":
+            #             query = query.order_by(getattr(OrderModel, key).asc())
+            #         elif direction == "desc":
+            #             query = query.order_by(getattr(OrderModel, key).desc())
+            query = query.offset((page - 1) * page_size).limit(page_size)
+            db_orders = session.execute(query).unique().scalars().all()
+            orders = []
+            for db_order in db_orders:
+                print(db_order.__dict__)
+                print(db_order.order_products)
+                products = [
+                    OrderItem(
+                        product_id=op.product_id,
+                        quantity=op.quantity,
+                        price=op.price,
+                    )
+                    for op in db_order.order_products
+                ]
+                order = Order(
+                    id=db_order.id,
+                    status=db_order.status,
+                    products=products,
+                    created_at=db_order.created_at,
+                    updated_at=db_order.updated_at,
+                    order_number=db_order.order_number,
+                    owner_id=db_order.owner_id,
+                    payment_status=db_order.payment_status,
+                    paid_at=db_order.paid_at,
+                    total_price=db_order.total_price,
                 )
-            query = query.offset(page * page_size).limit(page_size)
-            db_orders = session.execute(query).scalars().all()
-        return [Order.model_validate(db_order) for db_order in db_orders]
+                orders.append(order)
+
+        return orders
 
     def _count_orders(self, order_filter: OrderFilter) -> int:
         with self.db_session() as session:

@@ -3,7 +3,6 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 from api.v1.models.page import PageV1Response
-from api.v1.models.product import ProductV1Response
 
 
 class OrderItemV1Request(BaseModel):
@@ -17,7 +16,7 @@ class RegisterOrderV1Request(BaseModel):
 
 
 class OrderItemV1Response(BaseModel):
-    product: ProductV1Response
+    product_id: int
     quantity: int
     price: int
 

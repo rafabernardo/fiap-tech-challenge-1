@@ -1,18 +1,19 @@
-from db.postgresql.database import Base
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
+
+from db.postgresql.database import Base
 
 
 class OrderModel(Base):
     __tablename__ = "orders"
-    __table_args__ = {"extend_existing": True}
-    
-    id = Column(Integer, primary_key=True, index=True)
-    status = Column(String, nullable=False, index=True)  # Status
-    created_at = Column(DateTime, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
-    order_number = Column(Integer, nullable=True, unique=True, index=True)
-    owner_id = Column(Integer,ForeignKey("users.id"), nullable=True, index=True)
-    payment_status = Column(String, nullable=False, index=True)  # PaymentStatus
-    paid_at = Column(DateTime, nullable=True)
-    total_price = Column(Integer, nullable=False)
+    id = Column(Integer, primary_key=True)
+    status = Column(String)
+    created_at = Column(DateTime)
+    updated_at = Column(DateTime)
+    order_number = Column(String)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    payment_status = Column(String)
+    paid_at = Column(DateTime)
+    total_price = Column(Integer)
 
+    order_products = relationship("OrderProductModel", back_populates="order")
