@@ -24,7 +24,7 @@ jobs:
           terraform_version: 1.0.0
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="bucket=${BUCKET_TF_STATE}"
         working-directory: ./terraform
 
       - name: Terraform Plan
