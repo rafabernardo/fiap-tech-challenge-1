@@ -8,8 +8,12 @@ RUN poetry config virtualenvs.create false
 
 COPY pyproject.toml poetry.lock README.md alembic.ini ./
 COPY alembic/ /fiap-tech-challenge-1/alembic/
+COPY scripts/ /fiap-tech-challenge-1/scripts/
 COPY src/ /fiap-tech-challenge-1/src/
 RUN poetry install --no-dev
 
+RUN chmod +x scripts/api.sh scripts/alembic-upgrade.sh
+
+
 #TODO verify how to run CMD as list of args
-CMD uvicorn src.api.app:app --host 0.0.0.0 --port ${API_PORT}
+# CMD uvicorn src.api.app:app --host 0.0.0.0 --port ${API_PORT}
