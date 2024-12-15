@@ -12,36 +12,6 @@ spec:
           env:
             - name: API_PORT
               value: "80"
-            - name: MONGO_URI
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: MONGO_URI
-            - name: MONGO_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: MONGO_URL
-            - name: MONGO_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: MONGO_PORT
-            - name: MONGO_USERNAME
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: MONGO_USERNAME
-            - name: MONGO_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: MONGO_PASSWORD
-            - name: MONGO_DATABASE
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: MONGO_DATABASE
             - name: POSTGRESQL_DATABASE
               valueFrom:
                 configMapKeyRef:
@@ -57,16 +27,4 @@ spec:
                 configMapKeyRef:
                   name: env-config
                   key: POSTGRESQL_USERNAME
-            - name: POSTGRESQL_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: POSTGRESQL_PASSWORD
-            - name: POSTGRESQL_PORT
-              value: "5432"
-            - name: POSTGRESQL_URI
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: POSTGRESQL_URI
       restartPolicy: OnFailure
