@@ -1,10 +1,10 @@
 from logging.config import fileConfig
 
-from core.settings import get_settings
-from db.postgresql.database import Base
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+from core.settings import get_settings
+from db.postgresql.database import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -16,7 +16,8 @@ settings = get_settings()
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option('sqlalchemy.url', settings.POSTGRESQL_URI)
+postgress_uri = f"postgresql://{settings.POSTGRESQL_USERNAME}:{settings.POSTGRESQL_PASSWORD}@{settings.POSTGRESQL_URL}/{settings.POSTGRESQL_DATABASE}"
+config.set_main_option("sqlalchemy.url", postgress_uri)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
