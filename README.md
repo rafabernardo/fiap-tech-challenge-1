@@ -4,7 +4,7 @@
 
 ## Sobre o Projeto
 
-Este projeto é uma API RESTful desenvolvida em Python utilizando o framework FastAPI e banco de dados MongoDB. Foi criado aplicando os principais conceitos de arquitetura de software, como SOLID, DDD (Domain-Driven Design) e Clean Architecture.
+Este projeto é uma API RESTful desenvolvida em Python utilizando o framework FastAPI e banco de dados PostgreSQL. Foi criado aplicando os principais conceitos de arquitetura de software, como SOLID, DDD (Domain-Driven Design) e Clean Architecture.
 
 Para uma explicação sobre a infraestrutura e demonstração do funcionamento da API, assista o [Video](https://www.youtube.com/watch?v=avYM730vDaI).
 
@@ -137,23 +137,13 @@ flowchart TD
 
 Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 
-| Variável               | Descrição                          | Exemplo       |
-| ---------------------- | ---------------------------------- | ------------- |
-| API_PORT               | Porta de acesso à API              | 8000          |
-| MONGO_URI              | URI  completa para o MongoDB       |               |
-| MONGO_URL              | URL de acesso ao MongoDB           | localhost     |
-| MONGO_PORT             | Porta de acesso ao MongoDB         | 27017         |
-| MONGO_DATABASE         | Database utilizada no MongoDB      | database_test |
-| MONGO_USERNAME         | Usuário de acesso ao MongoDB       | user          |
-| MONGO_PASSWORD         | Senha de acesso ao MongoDB         | pass          |
-| MONGO_EXPRESS_USERNAME | Usuário de acesso ao Mongo Express | user          |
-| MONGO_EXPRESS_PASSWORD | Senha de acesso ao Mongo Express   | pass          |
-| POSTGRESQL_URI         | URI  completa para o MongoDB       |               |
-| POSTGRESQL_URL         | URL de acesso ao MongoDB           | localhost     |
-| POSTGRESQL_PORT        | Porta de acesso ao MongoDB         | 5432          |
-| POSTGRESQL_USERNAME    | Database utilizada no MongoDB      | database_test |
-| POSTGRESQL_PASSWORD    | Usuário de acesso ao MongoDB       | user          |
-| POSTGRESQL_DATABASE    | Senha de acesso ao MongoDB         | pass          |
+| Variável               | Descrição                             | Exemplo       |
+| ---------------------- | ------------------------------------- | ------------- |
+| API_PORT               | Porta de acesso à API                 | 8000          |
+| POSTGRESQL_URL         | URL de acesso ao Postgres com a PORTA | localhost:5432|
+| POSTGRESQL_USERNAME    | Database utilizada no Postgres        | database_test |
+| POSTGRESQL_PASSWORD    | Usuário de acesso ao Postgres         | user          |
+| POSTGRESQL_DATABASE    | Senha de acesso ao Postgres           | pass          |
 
 ## Execução do Projeto
 

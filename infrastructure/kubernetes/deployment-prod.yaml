@@ -30,35 +30,25 @@ spec:
           env:
             - name: API_PORT
               value: "80"
-            - name: MONGO_URI
+            - name: POSTGRESQL_DATABASE
               valueFrom:
                 configMapKeyRef:
                   name: env-config
-                  key: MONGO_URI
-            - name: MONGO_URL
+                  key: POSTGRESQL_DATABASE
+            - name: POSTGRESQL_URL
               valueFrom:
                 configMapKeyRef:
                   name: env-config
-                  key: MONGO_URL
-            - name: MONGO_PORT
+                  key: POSTGRESQL_URL
+            - name: POSTGRESQL_USERNAME
               valueFrom:
                 configMapKeyRef:
                   name: env-config
-                  key: MONGO_PORT
-            - name: MONGO_USERNAME
+                  key: POSTGRESQL_USERNAME
+            - name: POSTGRESQL_PASSWORD
               valueFrom:
                 configMapKeyRef:
                   name: env-config
-                  key: MONGO_USERNAME
-            - name: MONGO_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: MONGO_PASSWORD
-            - name: MONGO_DATABASE
-              valueFrom:
-                configMapKeyRef:
-                  name: env-config
-                  key: MONGO_DATABASE
+                  key: POSTGRESQL_PASSWORD
       imagePullSecrets:
         - name: dockerhub-secret
