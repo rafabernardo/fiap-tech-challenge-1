@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     API_PORT: int = 8000
     ROOT_PATH: str = "/fiap-soat"
 
-    POSTGRESQL_URL: str 
+    POSTGRESQL_URL: str
     POSTGRESQL_USERNAME: str
     POSTGRESQL_PASSWORD: str
     POSTGRESQL_DATABASE: str

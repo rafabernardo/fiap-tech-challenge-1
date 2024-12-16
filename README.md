@@ -6,13 +6,23 @@
 
 Este projeto é uma API RESTful desenvolvida em Python utilizando o framework FastAPI e banco de dados PostgreSQL. Foi criado aplicando os principais conceitos de arquitetura de software, como SOLID, DDD (Domain-Driven Design) e Clean Architecture.
 
-Para uma explicação sobre a infraestrutura e demonstração do funcionamento da API, assista o [Video](https://www.youtube.com/watch?v=avYM730vDaI).
+Para uma explicação sobre a infraestrutura na AWS, assista o [Video](https://www.youtube.com/watch?v=avYM730vDaI). (to do)
+
+Para uma explicação sobre a infraestrutura com Kubernetes com Kind localmente e demonstração do funcionamento da API, assista o [Video](https://www.youtube.com/watch?v=avYM730vDaI).
 
 ## Event Storming
 
 Para visualizar o diagrama criado a partir dos eventos, consulte o [board no Miro](https://shorturl.at/3xRZ9).
 
 ## Arquitetura da infraestrutura
+
+### Arquitetura do Projeto na AWS
+
+O projeto foi desenvolvido para ser executado em um cluster Kubernetes na AWS. Para mais informações de como configurar e rodar, consulte o repositorio da infraestrutra provisionada usando terraform no [Github da infraestrutura](https://github.com/rafabernardo/fiap-tech-challenge-k8s-infra).
+
+![Arquitetura AWS](/diagram/aws.png)
+
+### Arquitetura do Projeto com Kubernetes com Kind localmente
 
 O projeto foi desenvolvido para ser executado em um cluster Kubernetes com Kind localmente. Para mais informações de como configurar e rodar, consulte o
 [README da infraestrutura](infrastructure/kubernetes/README.md).
@@ -137,13 +147,24 @@ flowchart TD
 
 Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 
-| Variável               | Descrição                             | Exemplo       |
+<<<<<<< HEAD
+| Variável | Descrição | Exemplo |
+| ------------------- | ----------------------------- | -------------- |
+| API_PORT | Porta de acesso à API | 8000 |
+| POSTGRESQL_URL | URL de acesso ao MongoDB | localhost:5432 |
+| POSTGRESQL_USERNAME | Database utilizada no MongoDB | database_test |
+| POSTGRESQL_PASSWORD | Usuário de acesso ao MongoDB | user |
+| POSTGRESQL_DATABASE | Senha de acesso ao MongoDB | pass |
+=======
+| Variável | Descrição | Exemplo |
 | ---------------------- | ------------------------------------- | ------------- |
-| API_PORT               | Porta de acesso à API                 | 8000          |
-| POSTGRESQL_URL         | URL de acesso ao Postgres com a PORTA | localhost:5432|
-| POSTGRESQL_USERNAME    | Database utilizada no Postgres        | database_test |
-| POSTGRESQL_PASSWORD    | Usuário de acesso ao Postgres         | user          |
-| POSTGRESQL_DATABASE    | Senha de acesso ao Postgres           | pass          |
+| API_PORT | Porta de acesso à API | 8000 |
+| POSTGRESQL_URL | URL de acesso ao Postgres com a PORTA | localhost:5432|
+| POSTGRESQL_USERNAME | Database utilizada no Postgres | database_test |
+| POSTGRESQL_PASSWORD | Usuário de acesso ao Postgres | user |
+| POSTGRESQL_DATABASE | Senha de acesso ao Postgres | pass |
+
+> > > > > > > 5c527f52fc9474576d5387c96d03010f23843e33
 
 ## Execução do Projeto
 

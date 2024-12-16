@@ -42,13 +42,16 @@ jobs:
         working-directory: ./terraform
 
       - name: Log in to Amazon ECR
+        if: github.ref == 'refs/heads/main'
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build Docker image
+        if: github.ref == 'refs/heads/main'
         run: |
           docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}:latest .
 
       - name: Push Docker image to ECR
+        if: github.ref == 'refs/heads/main'
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}:latest
