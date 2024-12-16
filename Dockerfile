@@ -12,7 +12,7 @@ COPY scripts/ /fiap-tech-challenge-1/scripts/
 COPY src/ /fiap-tech-challenge-1/src/
 RUN poetry install --no-dev
 
-RUN chmod +x scripts/api.sh scripts/alembic-upgrade.sh
+RUN chmod +x scripts/api.sh
 
 
 #TODO verify how to run CMD as list of args
