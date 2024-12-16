@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    API_PORT: int
+    API_PORT: int = 8000
     ROOT_PATH: str = "/fiap-soat"
 
     POSTGRESQL_URL: str
