@@ -151,24 +151,13 @@ flowchart TD
 
 Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 
-<<<<<<< HEAD
-| Variável | Descrição | Exemplo |
-| ------------------- | ----------------------------- | -------------- |
-| API_PORT | Porta de acesso à API | 8000 |
-| POSTGRESQL_URL | URL de acesso ao MongoDB | localhost:5432 |
-| POSTGRESQL_USERNAME | Database utilizada no MongoDB | database_test |
-| POSTGRESQL_PASSWORD | Usuário de acesso ao MongoDB | user |
-| POSTGRESQL_DATABASE | Senha de acesso ao MongoDB | pass |
-=======
-| Variável | Descrição | Exemplo |
-| ---------------------- | ------------------------------------- | ------------- |
-| API_PORT | Porta de acesso à API | 8000 |
-| POSTGRESQL_URL | URL de acesso ao Postgres com a PORTA | localhost:5432|
-| POSTGRESQL_USERNAME | Database utilizada no Postgres | database_test |
-| POSTGRESQL_PASSWORD | Usuário de acesso ao Postgres | user |
-| POSTGRESQL_DATABASE | Senha de acesso ao Postgres | pass |
-
-> > > > > > > 5c527f52fc9474576d5387c96d03010f23843e33
+| Variável            | Descrição                             | Exemplo        |
+| ------------------- | ------------------------------------- | -------------- |
+| API_PORT            | Porta de acesso à API                 | 8000           |
+| POSTGRESQL_URL      | URL de acesso ao Postgres com a PORTA | localhost:5432 |
+| POSTGRESQL_USERNAME | Database utilizada no Postgres        | database_test  |
+| POSTGRESQL_PASSWORD | Usuário de acesso ao Postgres         | user           |
+| POSTGRESQL_DATABASE | Senha de acesso ao Postgres           | pass           |
 
 ## Execução do Projeto
 
