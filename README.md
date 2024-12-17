@@ -6,7 +6,7 @@
 
 Este projeto é uma API RESTful desenvolvida em Python utilizando o framework FastAPI e banco de dados PostgreSQL. Foi criado aplicando os principais conceitos de arquitetura de software, como SOLID, DDD (Domain-Driven Design) e Clean Architecture.
 
-Para uma explicação sobre a infraestrutura na AWS, assista o [Video](https://www.youtube.com/watch?v=avYM730vDaI). (to do)
+Para uma explicação sobre a infraestrutura na AWS, assista o [Video](https://youtu.be/H8zT2k17BAE).
 
 Para uma explicação sobre a infraestrutura com Kubernetes com Kind localmente e demonstração do funcionamento da API, assista o [Video](https://www.youtube.com/watch?v=avYM730vDaI).
 
@@ -21,6 +21,10 @@ Para visualizar o diagrama criado a partir dos eventos, consulte o [board no Mir
 O projeto foi desenvolvido para ser executado em um cluster Kubernetes na AWS. Para mais informações de como configurar e rodar, consulte o repositorio da infraestrutra provisionada usando terraform no [Github da infraestrutura](https://github.com/rafabernardo/fiap-tech-challenge-k8s-infra).
 
 ![Arquitetura AWS](/diagram/aws.png)
+
+### Arquitetura do Banco de Dados
+
+![Arquitetura do banco de dados](/diagram/bd.png)
 
 ### Arquitetura do Projeto com Kubernetes com Kind localmente
 
