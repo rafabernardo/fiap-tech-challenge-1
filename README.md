@@ -22,6 +22,10 @@ O projeto foi desenvolvido para ser executado em um cluster Kubernetes na AWS. P
 
 ![Arquitetura AWS](/diagram/aws.png)
 
+### Arquitetura do Banco de Dados
+
+![Arquitetura do banco de dados](/diagram/bd.png)
+
 ### Arquitetura do Projeto com Kubernetes com Kind localmente
 
 O projeto foi desenvolvido para ser executado em um cluster Kubernetes com Kind localmente. Para mais informações de como configurar e rodar, consulte o
